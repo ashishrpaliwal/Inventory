@@ -1,0 +1,167 @@
+function editUser(user_id)
+{
+	var value = user_id;
+	//alert(value);
+	document.userList_page.method="POST";
+	//document.userList_page.action="EditUser.jsp?user_Id="+value;
+	document.userList_page.action="/userServlet?action=" + "edit&user_Id=" + value;
+	document.userList_page.submit();
+}
+
+function prevPage()
+{
+	document.userList_page.method="POST";
+	document.userList_page.action="/userServlet?action=" + "previous";
+	document.userList_page.submit();
+}
+
+function nextPage()
+{
+	document.userList_page.method="POST";
+	document.userList_page.action="/userServlet?action=" + "next";
+	document.userList_page.submit();
+}
+function userListPage()
+{
+	document.edituser_page.method="POST";
+	document.edituser_page.action="/userServlet?action=" + "get";
+	//document.edituser_page.submit();
+}
+function userModify(user_Id)
+{
+	/*var namevalid=/^[a-zA-Z]+$/;
+	var loginIdvalid =/^[a-zA-Z][a-zA-Z0-9_]{5,20}$/;
+	var validpassword = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/; */
+	
+	var namevalid=/^[a-zA-Z]+$/;
+	var loginIdvalid =/^[a-zA-Z][a-zA-Z0-9_]{5,20}$/;
+	var validpassword = /(?=.*\w*\d).{6,20}/;
+	
+	
+	if(document.edituser_page.first_name.value=="")
+	{
+		alert("Please enter First Name");
+		document.edituser_page.first_name.focus();
+		return false;
+	}else if(document.edituser_page.first_name.value.search(namevalid)==-1)
+	 { 
+		alert("Please Enter valid First Name.(Alphabets are allowed)");        
+		//document.edituser_page.first_name.value = "";  
+		document.edituser_page.first_name.focus();
+		return false;
+	}
+	
+	/*if(document.edituser_page.first_name.value=="")
+	{
+		alert("Please enter First Name");
+		//eval(document.login_page.login.value="");
+		eval(document.edituser_page.first_name.focus());
+		return false;
+	}*/
+	
+	else if(document.edituser_page.last_name.value=="")
+	{
+		alert("Please enter Last Name");
+		//eval(document.login_page.pwd.value="");
+		document.edituser_page.last_name.focus()
+		return false;
+	}else if(document.edituser_page.last_name.value.search(namevalid)==-1)
+	 { 
+		alert("Please Enter valid Last Name.(Alphabets are allowed)");        
+		//document.edituser_page.last_name.value = "";  
+		document.edituser_page.last_name.focus();
+		return false;
+	}
+	
+	/*if(document.edituser_page.last_name.value=="")
+	{
+		alert("Please enter Last Name");
+		//eval(document.login_page.pwd.value="");
+		eval(document.edituser_page.last_name.focus());
+		return false;
+	}*/
+	
+	else if(document.edituser_page.login_id.value=="")
+	{
+		alert("Please enter Login Id");
+		//document.edituser_page.login_id.value = ""
+		document.edituser_page.login_id.focus();
+		return false;
+	}
+	else if(document.edituser_page.login_id.value.search(loginIdvalid)==-1)
+	 { 
+		alert("Please enter valid Login Id. Length should be atleast 6 chars.(Alphanumeric/underscore(_) is allowed)");  
+		//document.edituser_page.login_id.value ="";  
+		document.edituser_page.login_id.focus();
+		return false;
+	}
+	
+/*	if(document.edituser_page.login_id.value=="")
+	{
+		alert("Please enter Login Id");
+		//eval(document.login_page.pwd.value="");
+		eval(document.edituser_page.login_id.focus());
+		return false;
+	}*/
+	else if(document.edituser_page.pswd1.value=="")
+	{
+		alert("Please enter password");
+		//eval(document.login_page.pwd.value="");
+		document.edituser_page.pswd1.focus();
+		return false;
+	}
+	else if(document.edituser_page.pswd1.value.search(validpassword)==-1)
+	 { 
+		alert("Please enter valid password.(Should be Min 6 chars and combination of lower/upper case and numbers)");      
+		//document.edituser_page.pswd1.value ="";  
+		document.edituser_page.pswd1.focus();
+		return false;
+	}
+	else if(document.edituser_page.pswd2.value=="")
+	{
+		alert("Please enter confirm password");
+		//eval(document.login_page.pwd.value="");
+		document.edituser_page.pswd2.focus();
+		return false;
+	}
+
+	else if(document.edituser_page.pswd1.value != document.edituser_page.pswd2.value)
+	{
+		alert("Please make sure Password & Confirm Password field values are the same.");
+		//eval(document.newuser_page.pswd1.focus());
+		return false;
+	}
+
+	else if(document.edituser_page.location.value=="")
+	{
+		alert("Please select Location");
+		//eval(document.login_page.pwd.value="");
+		document.edituser_page.location.focus();
+		return false;
+	}
+	
+	/*if(document.edituser_page.pswd1.value != document.edituser_page.pswd2.value)
+	{
+		alert("Please make sure Password & Confirm Password field values are the same.");
+		//eval(document.edituser_page.pswd1.focus());
+		return false;
+	}*/
+	document.edituser_page.method="POST";
+	//document.edituser_page.action="/modifyUser";
+	document.edituser_page.action="/userServlet?action=" + "modify";
+	document.edituser_page.submit();
+	return true;
+}
+
+function welcomePage()
+{
+	document.edituser_page.method="POST";
+	document.edituser_page.action="welcome.jsp"
+	//document.UserDetailsEdit.submit();
+}
+
+
+
+
+
+

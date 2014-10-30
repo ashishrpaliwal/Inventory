@@ -1,0 +1,128 @@
+<%-- 
+  - Author(s): Siva prasad reddy
+  - Date: Feb 25th 2011
+  - Copyright Notice: Copyright © 2011 Sony Corporation.
+  - Description: User List Page
+ --%>
+
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<title>User Account List Page</title>
+</head>
+<%@ page language="java"%>
+<%@ page import="java.text.*,java.io.*,java.util.*"%>
+<%@page import="java.util.ArrayList"%>
+<%@ page import="com.sony.model.UserDetails" %>
+<%@ page import="com.sony.constant.BWAController" %>
+<%@ page import="com.sony.util.PaginationUtil" %>
+<link rel="stylesheet" href="css/footer.css" />
+<script type="text/javascript" src="../js/user.js"></script>
+<jsp:include page="session.jsp"/>
+
+
+
+<c:set var="modifystatus" value='<%=request.getParameter("modifyStatus")%>'/>
+<body style="background-image:url(images/bg7.jpg); background-repeat:repeat; background-position: 10% 10%; width:auto; height:auto")>
+<form name="userList_page">
+	<table width="100%"  border="0" cellspacing="0" cellpadding="0">
+		<tr width="100%">
+			<td>
+				<c:choose>
+					<c:when test="${userRole == 'Admin'}">
+						<jsp:include page="Header.jsp"/>
+					</c:when>
+					<c:otherwise>
+						<jsp:include page="UserHeader.jsp"/>
+					</c:otherwise>
+				</c:choose>
+			</td>
+		</tr>
+		<tr>
+			<td align="center" >
+					<table width="20%" border="0" align="center">
+			  			<tr>
+							<td width="100%" height="10%">
+				  				<B><h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User Account List</h4></B>
+				 			</td>
+			  			</tr>
+			  		</table>	
+	        		<p align="center">
+						<c:choose>
+							<c:when test="${modifystatus != null && modifystatus == 'yes'}">
+								<font color="#0099CC"> USER MODIFIED SUCCESSFULLY</font>
+							</c:when>
+							<c:when test="${modifystatus != null && modifystatus == 'NO'}">
+								<font color="#0099CC">USER NOT MODIFIED SUCCESSFULLY</font>
+							</c:when>
+						</c:choose>
+					</p>
+					<div align="center">
+					   	<table width="80%" border="1" align="center"  bordercolor="#999999" cellspacing="0" class="tablefont">
+						 	 <th align="center" bgcolor="#0099FF">Id</th>
+						 	 <th align="center" bgcolor="#0099FF">First Name</th>
+						 	 <th align="center" bgcolor="#0099FF">Last Name</th>
+						 	 <th align="center" bgcolor="#0099FF">Login Id</th>
+						 	 <th align="center" bgcolor="#0099FF">Location</th>
+						 	 <th align="center" bgcolor="#0099FF">Last Visit</th>
+						 	 <th align="center" bgcolor="#0099FF">Account Type</th>
+						 	 <th align="center" bgcolor="#0099FF">User Status</th>
+						 	 <th align="center" bgcolor="#0099FF">Edit</th>
+							 <c:if test="${user_List_displayed == null}">
+							 	<tr align="center">
+							 		<td colspan="11">
+							 			<b>No Records Available</b>
+							 		</td>
+							 	</tr>
+							 </c:if>    	
+						 	 <c:forEach var="user" items="${user_List_displayed}">
+						 	 	<tr align="center">
+									<td bgcolor="#CCCCCC">&nbsp;<c:out value="${user.user_Id}"></c:out></td>
+									<td bgcolor="#CCCCCC">&nbsp;<c:out value="${user.firstName}"></c:out> </td>
+									<td bgcolor="#CCCCCC">&nbsp;<c:out value="${user.lastName}"></c:out></td>
+									<td bgcolor="#CCCCCC">&nbsp;<c:out value="${user.login_Id}"></c:out></td>
+									<td bgcolor="#CCCCCC">&nbsp;<c:out value="${user.userLocation}"></c:out></td>
+									<td bgcolor="#CCCCCC">&nbsp;<c:out value="${user.lastLoginDate}"></c:out></td>
+									<td bgcolor="#CCCCCC">&nbsp;<c:out value="${user.userRole}"></c:out></td>
+									<td bgcolor="#CCCCCC">
+										<c:choose>
+											<c:when test="${user.userStatus == 'checked'}">
+												<b><font color="#009900">Active</font></b>
+											</c:when>
+											<c:otherwise>
+												<b><font color="#FF0000">In-Active</font></b>
+											</c:otherwise>
+										</c:choose>
+									</td>
+									<td bgcolor="#CCCCCC"><input name="edit" type="button" style="background:#000000; border-color:#003366; color:#ffffff;" onclick="editUser('<c:out value="${user.user_Id}"></c:out>')" value="Edit"/></td>
+						  		</tr>
+						 	 </c:forEach>
+						</table>
+					</div>
+					<br>
+					<c:if test="${user_List_displayed != null}">
+						<table width="10%" border="0" align="center">
+				  			<tr>
+				    			<td>
+				    				<input type="button" style="background:#003366; border-color:#003366; color:#ffffff;" name="Prev" value=" Prev "onclick="prevPage()" <c:if test="${paginationUtil.showPrevious == false}">disabled='disabled'</c:if>/>
+				    			</td>
+								<td>
+									<label>
+										<input type="text" name="pageNo" value='<c:out value="${paginationUtil.currentPage}"/>/<c:out value="${paginationUtil.totalPages}"/>' readonly="true" size="10"/>
+									</label>
+								</td>
+								<td>
+									<input type="button" style="background:#003366; border-color:#003366; color:#ffffff;" name="Next" value=" Next "onclick="nextPage()" <c:if test="${paginationUtil.showNext == false}">disabled='disabled'</c:if>/> 
+								</td>
+				  			</tr>
+						</table>
+					</c:if>
+			</td>
+		</tr>		
+	</table>
+</form>
+<jsp:include page="Footer.jsp"/>
+</BODY>
+</HTML>

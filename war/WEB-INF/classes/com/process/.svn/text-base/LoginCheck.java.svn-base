@@ -1,0 +1,124 @@
+/*
+ * Author: Susheel Kumar
+ * Classname: LoginCheck.java
+ * Version information: 1.0
+ * Date:01/01/2011
+ * Copyright © 2011 Sony Corporation. All rights reserved.
+ */
+package com.sony.process;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import com.sony.constant.BWAController;
+import com.sony.model.UserDetails;
+
+public class LoginCheck extends HttpServlet
+{
+	private static final Logger log = Logger.getLogger(LoginCheck.class.getName());
+    String login_Id="";
+    String pwd="";
+    
+    String logname="";
+    String userRole="";
+    
+    public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException, IOException
+    {
+	HttpSession session = req.getSession(true);
+	String redirectURL = (String)req.getParameter("redirectURL");
+	
+	login_Id=req.getParameter("login");
+	session.setAttribute("logname",login_Id);
+	pwd=req.getParameter("pwd");
+	
+	try
+	{
+				
+		if(login_Id.equals("admin") && pwd.equals("zaq1xsw2"))
+	    {
+			session.setAttribute("flag","valid");
+			session.setAttribute("userRole","Admin"); //(key,value)
+			//RequestDispatcher dispatcher = req.getRequestDispatcher("/jsp/welcome.jsp");
+			req.setAttribute("flag", "valid");
+			String theURL = com.sony.constant.BWAConstants.JSPPATH + "welcome.jsp";
+			if(redirectURL != null && !redirectURL.equalsIgnoreCase("") && !redirectURL.equalsIgnoreCase("null")){
+				
+				//RequestDispatcher dispatcher = req.getRequestDispatcher(redirectURL);
+				//dispatcher.forward(req, res);
+				res.sendRedirect(redirectURL);
+			}else{
+				theURL = res.encodeRedirectURL(theURL);
+				
+				res.sendRedirect(theURL);
+			}
+			//dispatcher.forward( req, res); 
+	    }
+	    else
+	    {	
+	    	
+	    	BWAController bwac = BWAController.INSTANCE;
+			List<UserDetails> user_List = new ArrayList<UserDetails>();
+			user_List = bwac.userLoginCheck(login_Id,pwd);
+			
+			
+			//for (UserDetails user_detail_obj : user_List){
+				if (!user_List.isEmpty()) {
+		        	//System.out.println("in logincheck file");
+					for (UserDetails user_detail_obj : user_List){
+						userRole=user_detail_obj.getUserRole();
+						
+						session.setAttribute("userRole",userRole); //(key,value)
+					}
+					//flag1="valid";
+					//session.setAttribute("flag1",flag1);
+					session.setAttribute("flag","valid");
+					String theURL = com.sony.constant.BWAConstants.JSPPATH + "welcome.jsp";
+					theURL = res.encodeRedirectURL(theURL);
+					res.sendRedirect(theURL);
+					//return user_List;
+					//RequestDispatcher dispatcher = req.getRequestDispatcher("jsp/welcome.jsp");
+					//req.setAttribute("flag", "valid");
+					//dispatcher.forward( req, res);
+					//dispatcher.include(req, res);
+		        }
+				else
+				{
+					//flag1="invalid";
+					//session.setAttribute("flag1",flag1);
+					session.setAttribute("flag","invalid");
+					String theURL = com.sony.constant.BWAConstants.JSPPATH + "login.jsp";
+					res.sendRedirect(theURL);
+					//RequestDispatcher dispatcher = req.getRequestDispatcher("jsp/login.jsp");
+					//req.setAttribute("flag", "invalid");
+					//dispatcher.forward( req, res);
+					//dispatcher.include(req, res);
+				}
+			//}
+	    	/*BWAController.INSTANCE.userLoginCheck(login_Id,pwd);
+	    	List<UserDetails> userDetails = new ArrayList<UserDetails>();
+	    	//userDetails = (List<UserDetails>) req.getParameter("userDetails");
+	    	for (UserDetails user_detail_obj : userDetails){
+				System.out.println("inside for loop login_Id = "+user_detail_obj.getLoginId());
+			}			*/
+	    	/*flag1="invalid";
+			session.setAttribute("flag1",flag1);
+			String theURL = com.sony.constant.BWAConstants.JSPPATH + "login.jsp?flag1=" +flag1;
+			res.sendRedirect(theURL);*/
+	    }
+
+        }
+        catch(Exception e)
+        {
+           e.printStackTrace();
+        }
+    }
+}
+

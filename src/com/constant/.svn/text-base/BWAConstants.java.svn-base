@@ -1,0 +1,20 @@
+/*
+ * Author: Susheel Kumar
+ * Classname: BWAConstants.java
+ * Version information: 1.0
+ * Date:01/01/2011
+ * Copyright © 2011 Sony Corporation. All rights reserved.
+ */
+
+package com.sony.constant;
+
+public interface BWAConstants {
+
+	   
+	  //public final String DBURL = "jdbc:mysql://localhost:3306/spectra"; // jdbc:mysql://43.88.101.26:0/spectra
+	  //public final String USERID = "root";
+	  //public final String PASSWORD = "admin";
+	  //public final String DRIVER = "com.mysql.jdbc.Driver"; //com.mysql.jdbc.Driver org.gjt.mm.mysql.Driver
+	  //public final String SERVLETPATH = "/spectra/servlet/SpectraProcess.";
+	  public final String JSPPATH = "/jsp/";
+}

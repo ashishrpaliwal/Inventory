@@ -1,0 +1,249 @@
+﻿/*
+ * Author: Susheel Kumar
+ * Classname: LogCreateData.java
+ * Version information: 1.0
+ * Date:01/01/2011
+ * Copyright © 2011 Sony Corporation. All rights reserved.
+ */
+
+
+package com.sony.process;
+
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.Date;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.appengine.api.datastore.Text;
+import com.sony.constant.BWAController;
+
+
+public class LogCreateData extends HttpServlet {
+	
+	private static final Logger log = Logger.getLogger(LogCreateData.class.getName());
+	
+	private String parent_Id=null;
+	private String client_Id="";
+	private String client_Ip="";
+	private String clientTool="";
+	private String clientOS="";
+	private String interfaceName="";
+	private String interfaceDesc="";
+	private long interfaceSpeed=0;
+	private int mtu=0;
+	private int rwin=0;
+	private long receivedLength=0;
+	private long socketRecvBuf=0;
+	private String url="";
+	private String playbackDateTime;
+	private Date loggedDateTime;
+	private Date lastUpdateTimeStamp;
+	private long duration=0;
+	private long length=0;
+	private String location="";
+	private long maxBitrateAppl=0;
+	private long avgBitrateAppl=0;
+	private long minBitrateAppl=0;
+	private long maxBitrateSock=0;
+	private long avgBitrateSock=0;
+	private long minBitrateSock=0;
+	private String accessNetwork="";
+	private String comments ="";
+	private String keepAlive ="";
+	private String testContent ="";
+	private String changedHistory="";
+	private String validity="TRUE";
+	//private int logFileSaveDur=0;
+	private Text file;
+	private static String header_id="";
+	private static String client_Ids="";
+	  
+  public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException, IOException
+  {
+	  	Date startTime = null;
+	  	Date endTime = null;
+	  	String contentType = req.getContentType();
+	  	StringBuffer sb = null;
+	  	try{
+	  		if ((contentType != null) && (contentType.indexOf("multipart/form-data") >= 0))
+			{ 
+				DataInputStream in = new DataInputStream(req.getInputStream());
+				sb = new StringBuffer();
+				String line = null;
+				client_Ip = req.getRemoteAddr();
+				loggedDateTime = new Date();
+				lastUpdateTimeStamp = loggedDateTime; 
+				startTime = new Date();
+				System.out.println("starting time:" + startTime.getTime());
+				//System.out.println("content data :::"+in.readUTF().toString());
+				while((line = in.readLine()) != null){
+					sb.append("<"+line+">");
+					//line.indexOf(str);
+					if(line.contains("ClientID")){
+						System.out.println("inside ClientID");
+						//String tmp = line.split(",")[1].concat("");
+						String tmp = line.split(",")[1].trim();
+						client_Id = tmp;
+						System.out.println("client_Id="+client_Id);
+					}
+					else if(line.contains("ClientTool")){
+						String tmp = line.split(",")[1].trim();
+						clientTool = tmp;
+						System.out.println("clientTool="+clientTool);
+					}
+					else if(line.contains("ClientOS")){
+						String tmp = line.split(",")[1].trim();
+						clientOS = tmp;
+						System.out.println("clientOS="+clientOS);
+					}
+					else if(line.contains("InterfaceName")){
+						String tmp = line.split(",")[1].trim();
+						interfaceName = tmp;
+						System.out.println("interfaceName="+interfaceName);
+					}
+					else if(line.contains("InterfaceDescription")){
+						String tmp = line.split(",")[1].trim();
+						interfaceDesc = tmp;
+						System.out.println("interfaceDesc="+interfaceDesc);
+					}
+					else if(line.contains("InterfaceSpeed")){
+						String tmp = line.split(",")[1];
+						interfaceSpeed = Long.parseLong(tmp);
+						System.out.println("interfaceSpeed="+interfaceSpeed);
+					}
+					else if(line.contains("MTU")){
+						String tmp = line.split(",")[1];
+						mtu = Integer.parseInt(tmp);
+						System.out.println("mtu="+mtu);
+					}
+					else if(line.contains("RWIN")){
+						String tmp = line.split(",")[1];
+						rwin = Integer.parseInt(tmp);
+						System.out.println("rwin="+rwin);
+					}
+					else if(line.contains("RecvLen")){
+						String tmp = line.split(",")[1];
+						if((tmp == null)||(tmp.equals("null"))){
+							receivedLength=0;
+						}else{
+						receivedLength = Long.parseLong(tmp);
+						System.out.println("receivedLength="+receivedLength);
+						}
+					}
+					else if(line.contains("SO_RECVBUF")){
+						String tmp = line.split(",")[1];
+						if((tmp == null)||(tmp.equals("null"))){
+							socketRecvBuf=0;
+						}else{
+						socketRecvBuf = Long.parseLong(tmp);
+						System.out.println("socketRecvBuf="+socketRecvBuf);
+						}
+					}
+					else if(line.contains("URL")){
+						String tmp = line.split(",")[1].trim();
+						url = tmp;
+						System.out.println("url="+url);
+					}
+					else if(line.contains("DateTime")){
+						String tmp = line.split(",")[1];
+						playbackDateTime = tmp;
+						System.out.println("playbackDateTime="+playbackDateTime);
+					}
+					else if(line.contains("Duration")){
+						String tmp = line.split(",")[1];
+						duration = Long.parseLong(tmp);
+						System.out.println("duration="+duration);
+					}
+					else if(line.contains("Length")){
+						String tmp = line.split(",")[1];
+						length = Long.parseLong(tmp);
+						System.out.println("length="+length);
+					}
+					else if(line.contains("Location")){
+						String tmp = line.split(",")[1].trim();
+						location = tmp;
+						System.out.println("location="+location);
+					}
+					else if(line.contains("MaxBitrateAppl")){
+						String tmp = line.split(",")[1];
+						maxBitrateAppl = Long.parseLong(tmp);
+						System.out.println("maxBitrateAppl="+maxBitrateAppl);
+					}
+					else if(line.contains("AvgBitrateAppl")){
+						String tmp = line.split(",")[1];
+						avgBitrateAppl = Long.parseLong(tmp);
+						System.out.println("avgBitrateAppl="+avgBitrateAppl);
+					}
+					else if(line.contains("MinBitrateAppl")){
+						String tmp = line.split(",")[1];
+						minBitrateAppl = Long.parseLong(tmp);
+						System.out.println("minBitrateAppl="+minBitrateAppl);
+					}
+					else if(line.contains("MaxBitrateSock")){
+						String tmp = line.split(",")[1].replaceAll("MaxBitrateSock	","");
+						maxBitrateSock = Long.parseLong(tmp);
+						System.out.println("maxBitrateSock="+maxBitrateSock);
+					}
+					else if(line.contains("AvgBitrateSock")){
+						String tmp = line.split(",")[1];
+						avgBitrateSock = Long.parseLong(tmp);
+						System.out.println("avgBitrateSock="+avgBitrateSock);
+					}
+					else if(line.contains("MinBitrateSock")){
+						String tmp = line.split(",")[1];
+						minBitrateSock = Long.parseLong(tmp);
+						System.out.println("minBitrateSock="+minBitrateSock);
+					}
+					else if(line.contains("Internet Access")){
+						String tmp = line.split(",")[1].trim();
+						accessNetwork= tmp;
+						
+					}
+					else if(line.contains("Comment")){
+						String[] tmp = line.split(",");
+						if(tmp.length > 1){
+							comments = tmp[1].trim();
+						}else{
+							comments = "";	
+						}
+					}
+					else if(line.contains("Test Content")){
+						String tmp = line.split(",")[1].trim();
+						testContent = tmp;
+					}
+					else if(line.contains("KeepAlive")){
+						String tmp = line.split(",")[1].trim();
+						 keepAlive= tmp;
+					}
+				}//while loop close
+				sb.length();
+				file = new Text(sb.toString());
+			}//if loop close
+	  		if(sb.length() > 1000000){
+	  			log.info("Inappropriate Log file. Log file submitted exceeds size limit.");
+	  			res.sendError(413, "Request Entity Too Large.");
+	  		}else{
+	  			boolean logFileSubmissionStatus = BWAController.INSTANCE.addHeader(parent_Id,client_Id,client_Ip,clientTool,clientOS,interfaceName,interfaceDesc,interfaceSpeed,mtu,rwin,receivedLength,socketRecvBuf,
+						url,playbackDateTime,loggedDateTime,duration,length,location,maxBitrateAppl,avgBitrateAppl,minBitrateAppl,maxBitrateSock,avgBitrateSock,minBitrateSock,file,startTime,comments,accessNetwork,
+						validity,testContent,keepAlive,changedHistory,lastUpdateTimeStamp);
+	  			if(!(logFileSubmissionStatus)){
+	  				res.sendError(503, "Service Unavailable.");
+	  			}
+	  		}
+			res.sendRedirect("jsp/FeedLog.jsp");
+	  	}catch(Exception e){
+	  		log.info("Exception thrown at LogCreate servlet --> "+e);
+	  		System.out.println("Exception at LogCreateData.java. Exception thrown = "+e);
+	  		res.sendError(400, "Bad Request.");
+	  	}
+	 }	
+}
+
+
+
+

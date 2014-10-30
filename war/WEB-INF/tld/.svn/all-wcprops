@@ -1,0 +1,107 @@
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld
+END
+sql.tld
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/sql.tld
+END
+sql-1_0-rt.tld
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/sql-1_0-rt.tld
+END
+c-1_0.tld
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/c-1_0.tld
+END
+permittedTaglibs.tld
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/permittedTaglibs.tld
+END
+fn.tld
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/fn.tld
+END
+c-rt.tld
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/c-rt.tld
+END
+scriptfree.tld
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/scriptfree.tld
+END
+customTag.tld
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/customTag.tld
+END
+x-1_0-rt.tld
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/x-1_0-rt.tld
+END
+x.tld
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/x.tld
+END
+fmt-rt.tld
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/fmt-rt.tld
+END
+sql-1_0.tld
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/sql-1_0.tld
+END
+sql-rt.tld
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/sql-rt.tld
+END
+c.tld
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/c.tld
+END
+c-1_0-rt.tld
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/c-1_0-rt.tld
+END
+x-1_0.tld
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/x-1_0.tld
+END
+x-rt.tld
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/tld/x-rt.tld
+END

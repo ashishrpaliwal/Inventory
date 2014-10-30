@@ -1,0 +1,112 @@
+/*
+ * Author: Susheel Kumar
+ * Classname: LogFile.java
+ * Version information: 1.0
+ * Date:01/01/2011
+ * Copyright © 2011 Sony Corporation. All rights reserved.
+ */
+
+package com.sony.model;
+
+import java.io.Serializable;
+
+import com.google.appengine.api.datastore.Blob;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Text;
+
+import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
+
+@PersistenceCapable
+public class LogFile implements Serializable{
+	
+	@PrimaryKey
+	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	private Key log_Id;
+	
+	@Persistent
+	private String header_Id;
+
+	@Persistent
+	private Key fk_header_Id;
+	
+	@Persistent
+	private String client_Id;
+	@Persistent
+	private Text logFile;
+	@Persistent
+	private long logFileSaveDur;
+	//private Blob logFile;
+	
+	/*public LogFile(){
+		
+	}*/
+	
+	
+	
+	public LogFile(Key fk_header_Id,String header_Id,String client_Id,Text logFile){
+		this.header_Id=header_Id;
+		this.client_Id=client_Id;
+		this.logFile=logFile;
+		this.logFileSaveDur = 0;
+		this.fk_header_Id = fk_header_Id;
+				
+	}
+	
+	// Accessors for the fields.  JDO doesn't use these, but your application does.
+
+    public Key getLog_Id() {
+		return log_Id;
+	}
+
+	public void setLog_Id(Key logId) {
+		log_Id = logId;
+	}
+
+	public String getHeader_Id() {
+		return header_Id;
+	}
+
+	public void setHeader_Id(String headerId) {
+		header_Id = headerId;
+	}
+
+	public Key getFk_header_Id() {
+		return fk_header_Id;
+	}
+
+	public void setFk_header_Id(Key fkHeaderId) {
+		fk_header_Id = fkHeaderId;
+	}
+
+	public String getClient_Id() {
+		return client_Id;
+	}
+
+	public void setClient_Id(String clientId) {
+		client_Id = clientId;
+	}
+
+	public Text getLogFile() {
+		return logFile;
+	}
+
+	public void setLogFile(Text logFile) {
+		this.logFile = logFile;
+	}
+
+	public long getLogFileSaveDur() {
+		return logFileSaveDur;
+	}
+
+	public void setLogFileSaveDur(long logFileSaveDur) {
+		this.logFileSaveDur = logFileSaveDur;
+	}
+
+	public Key getKey() {
+        return log_Id;
+    }
+   
+}

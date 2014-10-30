@@ -1,0 +1,11 @@
+
+.footer{
+    background-color:#e5e8ed;
+	color:#000000;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:11px;
+}
+input {       
+	font-family: sans-serif;
+}
+

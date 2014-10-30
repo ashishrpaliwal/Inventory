@@ -1,0 +1,10 @@
+/* import existing print stylesheet */
+/*@import "print.css";*/
+
+/* set styles for the preview message */
+.preview-message {
+	display:block;
+	border:1px solid #666;
+	background:#FF6;
+	padding:2px 5px;
+}

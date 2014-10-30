@@ -1,0 +1,480 @@
+<%-- 
+  - Author(s): Susheel Kumar
+  - Date: October 2011
+  - Copyright Notice: Copyright � 2011 Sony Corporation.
+  - Description: View Log Detail Page
+ --%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jstl/fmt_rt" prefix="fmt"%>
+<%@ taglib  uri="customTags"  prefix="time" %>
+
+<%@ taglib  uri="customTags"  prefix="time" %>
+<%@ page import="java.text.*,java.io.*,java.util.*"%>
+<%@page import="java.util.ArrayList"%>
+<%@ page import="com.sony.model.HeaderInfo" %>
+<%@ page import="com.sony.model.LogFile" %>
+<%@ page import="com.sony.constant.BWAController"%>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<title>Log File Detail View Page</title>
+</head>
+<link rel="stylesheet" href="css/footer.css" />
+<link rel="SHORTCUT ICON" href="images/bwa.ico"/>
+<jsp:include page="session.jsp"/>
+<script src="/js/balloon.js" language="javascript"></script>
+<script src="/js/balloon.config.js" language="javascript"></script>
+<script src="/js/box.js" language="javascript"></script>
+<script src="/js/yahoo-dom-event.js" language="javascript"></script>
+<script type="text/javascript">
+  	
+   // a box that fades in/out
+   var fadeBox     = new Box;
+   BalloonConfig(fadeBox,'GBox');
+   fadeBox.bgColor     = 'black';
+   fadeBox.fontColor   = 'white';
+   fadeBox.borderStyle = 'none';//2px solid blue
+   fadeBox.delayTime   = 200;
+   fadeBox.allowFade   = true;
+   fadeBox.fadeIn      = 950;
+   fadeBox.fadeOut     = 900;
+   fadeBox.minWidth = 250;
+   fadeBox.maxWidth = 600;
+   fadeBox.stemHeight = 70;
+   fadeBox.vOffset  = -20;
+ /*  
+   var fadeBox2     = new Box;
+   BalloonConfig(fadeBox2,'GBox');
+   fadeBox2.bgColor     = 'black';
+   fadeBox2.fontColor   = 'white';
+   fadeBox2.borderStyle = 'none';//2px solid blue
+   fadeBox2.delayTime   = 200;
+   fadeBox2.allowFade   = true;
+   fadeBox2.fadeIn      = 950;
+   fadeBox2.fadeOut     = 900;
+   fadeBox2.minWidth = 250;
+   fadeBox2.maxWidth = 650;
+   fadeBox2.stemHeight = 40;
+   //fadeBox2.Offset  = 80;
+   fadeBox2.padding = 15;*/
+   //fadeBox2.hOffset  = 65;
+ </script>
+
+<script>
+  function DownloadLog(header_id)
+  {
+	document.showLogFile.method="POST";
+	document.showLogFile.action="./DownloadLog.jsp?header_id="+header_id+"&SaveAs=true";
+	document.showLogFile.submit();
+  }	
+  </script>  
+<%!
+	String headerId ="";
+	List<Long> AppDataDuration;// = new ArrayList<Long>();
+	List<Long> AppDataLength;
+	List<Long> SockDuration;
+	List<Long> SockLength;
+	
+	String header_id= "";
+	LogFile logDataObj = null;
+%>
+
+
+<%
+	header_id = request.getParameter("header_id");
+	System.out.println("header_id=="+header_id);
+%>
+<%
+HeaderInfo headerInfo = (HeaderInfo)request.getSession().getAttribute("headerDetail");
+String history = headerInfo.getChangedHistory();
+String recentHistory = headerInfo.getChangedHistory();
+String displayHistory = headerInfo.getChangedHistory();
+if(headerInfo != null){
+	if(history != null && !"".equalsIgnoreCase(history)){
+		recentHistory = history.split(";")[0];
+		displayHistory = history.replace(recentHistory+";","");
+		displayHistory = displayHistory.replace(";","<br>");
+	}else{
+		displayHistory = "";
+		recentHistory="";
+	}
+	
+}
+%>
+<c:set var="completeHis" scope="request" value="<%=displayHistory%>"/>
+<body style="background-image:url(images/bg7.jpg); background-repeat:repeat; background-position: 10% 10%; width:auto; height:auto" >
+<form name="showLogFile" method="post">
+<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">  <!--holder start-->
+<tr>
+	<td align="center">
+	<table width="50%" border="0" align="center">
+	  <tr>
+		<td width="100%" height="43" align="center">
+		  <B>
+		  <h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Log File Detail Page</h4>
+		  </B>			    </td>
+		  
+	</tr>
+	<tr>
+		<td width="100%" align="center">
+		 <INPUT type="button" name="SaveAs" value="Download Log File" onClick="DownloadLog('<%=header_id%>')" style="background:#003366; border-color:#003366; color:#FFFFFF;"> 
+		  </td>
+		  
+	</tr>
+	
+	
+	
+	</table>
+		<!-- Will be discarded from excel sheet -->	
+			<table width="100%" border="0" align="center">
+				  <tr>
+					<td>
+						<table width="80%" border="1" align="center" bordercolor="#999999" cellspacing="0" class="tablefont">
+							<tr>
+								<th width="15%" align="left" bgcolor="#0099FF">&nbsp;Title</th>
+								<th width="85%" align="left">&nbsp;Internet BandwidthChange Measurement Log File</th>
+							</tr>
+							<tr>
+								<th width="15%" align="left" bgcolor="#0099FF">&nbsp;HeaderID</th>
+								<th width="85%" align="left">&nbsp;<c:out value="${headerDetail.headerId}"/></th>
+							</tr>
+							<tr>
+								<th width="15%" align="left" bgcolor="#0099FF">&nbsp;ParentID</th>
+								<th width="85%" align="left">&nbsp;<c:out value="${headerDetail.parent_Id}"/></th>
+							</tr>
+							<tr>
+								<th width="15%" align="left" bgcolor="#0099FF">&nbsp;Changed History</th>
+								<th width="85%" align="left">&nbsp;<%=recentHistory %>
+								<c:if test="${completeHis != ''}">&nbsp;<img src="/images/readmorebutton.gif" onMouseOver="fadeBox.showTooltip(event,'${completeHis}')"/></c:if>  
+								
+								</th>
+							</tr>
+							<tr>
+								<th width="15%" align="left" bgcolor="#0099FF">&nbsp;Client Id</th>
+								<th width="85%" align="left">&nbsp;<c:out value="${headerDetail.client_Id}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;Client Tool</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.clientTool}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;Client OS</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.clientOS}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;Client IP</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.client_Ip}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;Interface Name</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.interfaceName}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;Interface Desc</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.interfaceDesc}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;Interface Speed</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.interfaceSpeed}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;MTU</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.mtu}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;RWIN</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.rwin}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;RecvLen</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.receivedLength}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;SO_RECVBUF</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.socketRecvBuf}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;URL</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.url}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;DateTime</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.playBackDateTime}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;Logged DateTime</th>
+								<th align="left">&nbsp;<fmt:setLocale value="en_US"/><fmt:formatDate pattern="E dd MMM yyyy HH:mm:ss Z" value="${headerDetail.loggedDateTime}" />
+								</th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;Duration</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.duration}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;Length</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.length}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;Location</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.location}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;Internet Access</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.accessNetwork}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;Comment</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.comments}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;MaxBitrateAppl</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.maxBitrateAppl}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;AvgBitrateAppl</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.avgBitrateAppl}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;MinBitrateAppl</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.minBitrateAppl}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;MaxBitrateSock</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.maxBitrateSock}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;AvgBitrateSock</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.avgBitrateSock}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;MinBitrateSock</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.minBitrateSock}"/></th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;Test Content</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.testContent}"/>
+								</th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;KeepAlive</th>
+								<th align="left">&nbsp;<c:out value="${headerDetail.keepAlive}"/>
+								</th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;Validity</th>
+								<th align="left">&nbsp;
+														<c:if test="${headerDetail.validity == 'TRUE' || headerDetail.validity == '' || headerDetail.validity == 'Valid'}">Valid</c:if> 
+														<c:if test="${headerDetail.validity == 'FALSE' || headerDetail.validity == 'Invalid'}">Invalid</c:if>
+														<c:if test="${headerDetail.validity == 'High_Valid'}">High Valid</c:if>  
+								</th>
+							</tr>
+							<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;LastUpdateTimeStamp</th>
+								<th align="left">&nbsp;<fmt:setLocale value="en_US"/><fmt:formatDate pattern="E dd MMM yyyy HH:mm:ss Z" value="${headerDetail.lastUpdateTimeStamp}" />
+								</th>
+							</tr>
+							<input type='hidden' name='lastUpdateTS' value='<fmt:formatDate pattern="EddMMMyyyyHHmmssZ" value="${headerDetail.lastUpdateTimeStamp}" />' />
+							<input type='hidden' name='lastUpdateTS_2' value='<fmt:formatDate pattern="EddMMMyyyyHHmmssZ" value="${headerDetail.loggedDateTime}" />' />
+						<%
+							headerId = request.getParameter("header_id");
+							System.out.println("headerId = "+headerId);
+							BWAController bwac = BWAController.INSTANCE;
+							try{
+						   		ArrayList appList = new ArrayList();
+						   		ArrayList socList = new ArrayList();
+						   		ArrayList<String> transList = new ArrayList<String>();
+						   		List<LogFile> logdata = null;
+								logdata = bwac.getLogDetail(headerId);
+								long sum_dur = 0;
+								long sum_sock_dur = 0;
+								for (LogFile log_list_obj : logdata){
+					   	%>
+				   			<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;TimeToSaveLogFile</th>
+								<th align="left">&nbsp;<%=log_list_obj.getLogFileSaveDur()%> &nbsp;(ms)</th>
+							</tr>	
+			   			<%
+						   			String[] logFileData = log_list_obj.getLogFile().getValue().split(">");
+						   			for(int i=0;i<logFileData.length;i++) {
+						  				if(!(logFileData[i].startsWith("<Tran")) && !(logFileData[i].startsWith("<Appl")) && !(logFileData[i].startsWith("<Geom")) && !(logFileData[i].startsWith("<Disc")) && !(logFileData[i].startsWith("<Plist")) && !(logFileData[i].startsWith("<Sock"))){
+						 					continue;
+						 				}
+					 	%>
+					 		<!------------------------ Plist display below----------------------->
+					 	<% 			
+							  			if(logFileData[i].contains("Plist")) {
+							  				String[] plist = logFileData[i].split(",");
+					  	%>
+					 		<tr>
+						
+			  					<th align="left" bgcolor="#0099FF">&nbsp;Plist</th>
+			  					<th align="left">&nbsp;
+	  					<% 
+	  										for(int m=1; m < plist.length;m++) { 
+	  					%>
+			  									<%=plist[m]%>,&nbsp;		  						
+					  	<%
+							  				}
+	  					%>
+	  							</th>
+	  					</tr>
+					  	<%
+							  			}
+					  	%>	
+					  		<!------------------------ Geolocation display below----------------------->
+					  	<% 			
+										if(logFileData[i].contains("Geom")) {
+							  				String[] Geom = logFileData[i].split(",");
+					  	%>
+					  		<tr>	
+					  			<th align="left" bgcolor="#0099FF">&nbsp;Geom</th>
+					  			<th align="left">&nbsp;
+					  	<% 
+					  						for(int m=1; m < Geom.length;m++) { 
+					  	%>
+					  							<%=Geom[m]%>,&nbsp;		  						
+					  	<%
+				  							}
+					  	%>
+					  			</th>
+					  		</tr>
+					  	<%
+				  						}
+					  	%>
+					  			
+					  		
+					  		<!------------------------ Disconnect Time display below----------------------->
+						<% 			
+										if(logFileData[i].contains("Disc")) {
+							  				String[] Disc = logFileData[i].split(",");
+					  	%>
+						  	<tr>	
+						  		<th align="left" bgcolor="#0099FF">&nbsp;Disc</th>
+						  		<th align="left">&nbsp;
+					  	<% 
+					  						for(int m=1; m < Disc.length;m++) { 
+					  	%>
+					  							<%=Disc[m]%>,&nbsp;		  						
+					  	<%
+					  						}
+					  	%>
+					  			</th>
+					  		</tr>	
+					  	<%
+					  					}
+					  	%>
+					  	<!------------------------ Trans display below----------------------->
+					 	<% 	
+										if(logFileData[i].contains("Tran")) {
+											sum_dur=0;
+											sum_sock_dur=0; 	
+							  				String[] transData = logFileData[i].split(",");
+					  	%>
+					  		<tr>	
+					  			<th align="left" bgcolor="#0099FF">&nbsp;Trans</th>
+					  				<th align="left">&nbsp;
+					  	<% 
+							  				for(int j=1; j < transData.length;j++) { 
+							  					if(j==1 || j==6 || j==7){
+							  						sum_dur += Long.parseLong(transData[j]);
+							  						sum_sock_dur += Long.parseLong(transData[j]);
+							  					}
+					  	%>
+					  							<%=transData[j]%>,&nbsp;		  						
+					  	<%
+					  						}
+					  	%>
+					  				</th>
+					  			</tr>
+					  		<!------------------------ Appl display ----------------------->
+					  	<%				
+					  					}else if(logFileData[i].contains("Appl")) {
+					  	%>
+						  	<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;Appl</th>
+								<th align="left">&nbsp;
+					  	<%
+							  				String[] appData = logFileData[i].split(",");
+							  					for(int x=1;x<appData.length;x++) {
+								  					long appTmp = 0;
+								  					if(x % 2 == 0){
+								  						try{
+								  							appTmp = (Long.parseLong(appData[x])*8)/(Long.parseLong(appData[x-1]));
+								  						}catch(Exception e){
+								  							appData[x-1] = "0";
+								  						}
+								  						
+								  					}else{
+								  						sum_dur += Long.parseLong(appData[x]);
+								  					} 
+					  	%>
+					  								<%=appData[x]%>, 
+					  	<%
+					  								if(x%2==0){
+					  	%>
+					  					<font color="red">(<time:formater milliSeconds="<%=sum_dur%>" pattern="HH:mm:ss:SSS"/>,<%=appTmp%>)</font>,
+					  	<%
+					  								}
+					  							}	
+					  	%>
+					  			</th>
+					  		</tr>
+					  	<%				
+					  					}else if(logFileData[i].contains("Sock")) {
+					  	%>
+					  		<tr>
+								<th align="left" bgcolor="#0099FF">&nbsp;Sock</th>
+								<th align="left">&nbsp;
+					  	<%
+							  				String[] sockData = logFileData[i].split(",");
+							  				for(int x=1;x<sockData.length;x = x+3) {
+								  				long sockTmp = 0;
+								  				try{
+								  					sockTmp = (Long.parseLong(sockData[x + 1])*8)/(Long.parseLong(sockData[x]));
+								  				}catch(Exception e){
+								  					sockData[x] = "0";
+								  				}
+								  				sum_sock_dur += Long.parseLong(sockData[x]);
+					  	%>
+					  							<%=sockData[x]%>,<%=sockData[x + 1]%>,<%=sockData[x + 2]%>,
+					  						
+					  				<font color="red">(<time:formater milliSeconds="<%=sum_sock_dur%>" pattern="HH:mm:ss:SSS"/>,<%=sockTmp%>)</font>,
+					  	<% 		
+					  					    }
+					  	%>
+					  			</th>
+					  		</tr>	
+					  	<%
+					  					}		
+					  				}
+					   			}
+				   	%>
+						</table>
+					<!-- </div> -->
+					<%
+							}catch(Exception e){
+								e.printStackTrace();
+								System.out.println("Exception at ShowFile = "+e.getMessage());
+							}
+					%>
+					</td>
+				  </tr>
+		</table>
+	
+		<p>&nbsp;</p>
+				<!--  <div align="center" style="overflow:scroll; height:50%;width:100%;"> -->
+				<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</td>
+</tr>
+</table>
+<input type="hidden" name="header_id" value="<%=header_id%>" />
+</form>
+<jsp:include page="Footer.jsp"/>
+</BODY>
+</HTML>

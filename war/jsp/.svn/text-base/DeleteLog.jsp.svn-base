@@ -1,0 +1,81 @@
+<%-- 
+  - Author(s): Susheel Kumar
+  - Date: December 2010
+  - Copyright Notice: Copyright  2011 Sony Corporation.
+  - Description: Page for Deleting LogFile
+ --%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<%@ page import="java.text.*,java.io.*,java.util.*"%>
+<%@page import="java.util.ArrayList"%>
+<%@ page import="com.sony.model.LogFile" %>
+<%@ page import="com.sony.constant.BWAController" %>
+
+<title>Delete LogFile Page</title>
+</head>
+<link rel="stylesheet" href="css/footer.css" />
+<jsp:include page="session.jsp"/>
+
+<script type="text/javascript" language="javascript" src="resource/jquery-1.2.6.min.js"></script>
+<script type="text/javascript" language="javascript" src="resource/model-popup.js"></script>
+
+<script type="text/JavaScript">
+
+function deleteLogFile(headerId)
+{
+	document.deleteLog.method="POST";
+	//document.feedLog.action="/createLogData";
+	document.deleteLog.action="/deleteLogServlet?headerId="+headerId;
+	//document.feedLog.action="< %=blobstoreService.createUploadUrl("/upload")%>";
+	//alert("action = "+document.feedLog.action);
+	//document.feedLog.submit();
+}
+
+
+</script>
+
+<!--<body style="background-image: url(../icons/login2.gif);background-repeat:repeat;width:100%;height:100%;" bgColor="#00CCCC" onload=document.f1.login.focus()>-->
+<body style="background-image:url(images/bg7.jpg); background-repeat:repeat; background-position: 10% 10%; width:auto; height:auto">
+<form name="deleteLog"  method="post" accept-charset="utf-8">
+
+<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">  <!--holder start-->
+	<tr><td>
+		<jsp:include page="Header.jsp"/>
+	</td></tr>
+
+<tr>
+	<td align="center">
+	<p>&nbsp;</p>
+	<p>&nbsp;</p>
+	<p>&nbsp;</p>
+			<table width="50%" border="0" align="center">
+			  <tr>
+				<td width="100%" height="43" colspan="2" align="center"><font face="Verdana, Helvetica, sans-serif" size="3" color="#000000">
+				  <B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Delete Log File</B></FONT></h1>				</td>
+			</tr><p>&nbsp;</p>
+			</table>
+			<table width="40%" border="0" align="center">
+			<tr>
+			  <td width="100%" height="10%" colspan="2" align="center"><INPUT type="text" name="headerid">&nbsp;
+					<input name="submit" type="submit" class="cts9" style="background:#003366; border-color:#003366; color:#FFFFFF;" value=" Delete " onClick="deleteLogFile()"/>				</td>
+			  </tr>
+			</table>
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</td>
+</tr>
+</table>
+</form>
+<jsp:include page="Footer.jsp"/>
+</BODY>
+
+</HTML>

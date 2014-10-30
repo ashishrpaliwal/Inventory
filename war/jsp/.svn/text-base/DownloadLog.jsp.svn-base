@@ -1,0 +1,91 @@
+<%@ page import="java.text.*,java.io.*,java.util.*,java.util.ArrayList,com.sony.model.HeaderInfo,com.sony.model.LogFile,com.sony.constant.BWAController"%>
+<%!String headerId ="";String lastUpdateTS_2="";String lastUpdateTS="";List<Long> AppDataDuration;List<Long> AppDataLength;List<Long> SockDuration;	List<Long> SockLength;	String header_id= "";LogFile logDataObj = null;
+%>
+<%header_id = request.getParameter("header_id");
+lastUpdateTS = request.getParameter("lastUpdateTS");
+lastUpdateTS_2 = request.getParameter("lastUpdateTS_2");
+if(lastUpdateTS == null || "".equals(lastUpdateTS)){lastUpdateTS=lastUpdateTS_2;}
+  int strtIndex = header_id.indexOf ("(");
+  strtIndex +=1;
+  int endIndex = header_id.indexOf (")");
+  String org_header_id = header_id.substring(strtIndex,endIndex);
+ String saveAsExcel=request.getParameter("SaveAs");
+ if(saveAsExcel.equals("true")) {
+        response.setContentType("application/csv");
+        //response.setCharacterEncoding("UTF-8");
+        //response.setHeader("Content-Disposition","attachment;filename="+ filename);
+        response.addHeader("Content-Disposition","attachment;filename=BWA\\"+org_header_id+"\\"+lastUpdateTS+".csv");
+}try{headerId = request.getParameter("header_id");
+BWAController bwac = BWAController.INSTANCE;
+							List<HeaderInfo> headerdata = new ArrayList<HeaderInfo>();
+							headerdata = bwac.getHeaderDetail(header_id);
+							for (HeaderInfo header_list_obj : headerdata){%>
+Title,Internet Bandwidth Change Measurement Log File
+HeaderID,<%=header_list_obj.getHeaderId()%>
+ParentID,<%if(header_list_obj.getParent_Id() != null){%><%=header_list_obj.getParent_Id()%><%}%>
+ChangedHistory,<%=header_list_obj.getChangedHistory()%>
+ClientID,<%=header_list_obj.getClient_Id()%>
+ClientTool,<%=header_list_obj.getClientTool()%>
+ClientOS,<%=header_list_obj.getClientOS()%>
+ClientIP,<%=header_list_obj.getClient_Ip()%>
+InterfaceName,<%=header_list_obj.getInterfaceName()%>
+InterfaceDescription,<%=header_list_obj.getInterfaceDesc()%>
+InterfaceSpeed,<%=header_list_obj.getInterfaceSpeed()%>
+MTU,<%=header_list_obj.getMTU()%>
+RWIN,<%=header_list_obj.getRWIN()%>
+RecvLen,<%=header_list_obj.getReceivedLength()%>
+SO_RECVBUF,<%=header_list_obj.getSocketRecvBuf()%>
+URL,<%=header_list_obj.getURL()%>
+DateTime,<%=header_list_obj.getPlayBackDateTime()%>
+Logged DateTime,<%=header_list_obj.getLoggedDateTime()%>
+Duration,<%=header_list_obj.getDuration()%>
+Length,<%=header_list_obj.getLength()%>
+Location,<%=header_list_obj.getLocation()%>
+Internet Access,<%=header_list_obj.getAccessNetwork()%>
+Comment,<%=header_list_obj.getComments()%>
+MaxBitrateAppl,<%=header_list_obj.getMaxBitrateAppl()%>
+AvgBitrateAppl,<%=header_list_obj.getAvgBitrateAppl()%>
+MinBitrateAppl,<%=header_list_obj.getMinBitrateAppl()%>
+MaxBitrateSock,<%=header_list_obj.getMaxBitrateSock()%>
+AvgBitrateSock,<%=header_list_obj.getAvgBitrateSock()%>
+MinBitrateSock,<%=header_list_obj.getMinBitrateSock()%>
+Test Content,<%if(header_list_obj.getTestContent() != null){%><%=header_list_obj.getTestContent()%><%}%>
+KeepAlive,<%if(header_list_obj.getKeepAlive() != null){%><%=header_list_obj.getKeepAlive()%><%}%>
+Validity,<%if(header_list_obj.getValidity() != null){%><%if(header_list_obj.getValidity().equalsIgnoreCase("High_Valid")){%>High Valid<%}else if(header_list_obj.getValidity().equalsIgnoreCase("TRUE")){%>Valid<%}else if(header_list_obj.getValidity().equalsIgnoreCase("FALSE")){%>Invalid<%}}else{%>Valid<%}%>
+LastUpdateTimeStamp,<%if(header_list_obj.getLastUpdateTimeStamp() != null){%><%=header_list_obj.getLastUpdateTimeStamp()%><%}else{%><%=header_list_obj.getLoggedDateTime()%><%}}%>
+						<%ArrayList appList = new ArrayList();
+					   		ArrayList socList = new ArrayList();
+					   		ArrayList<String> transList = new ArrayList<String>();
+					   		List<LogFile> logdata = null;
+							logdata = bwac.getLogDetail(headerId);
+							StringBuffer sb = null;
+					   		for (LogFile log_list_obj : logdata){%>TimeToSaveLogFile,<%=log_list_obj.getLogFileSaveDur()%>(ms)
+					   			<%String[] logFileData = log_list_obj.getLogFile().getValue().split(">");
+					   			for(int i=0;i<logFileData.length;i++) {
+					   				if(!(logFileData[i].startsWith("<Tran")) && !(logFileData[i].startsWith("<Appl")) && !(logFileData[i].startsWith("<Plist")) && !(logFileData[i].startsWith("<Geom")) && !(logFileData[i].startsWith("<Disc")) && !(logFileData[i].startsWith("<Sock"))){continue;}
+					   				if(logFileData[i].contains("Plist")) {
+					  					sb = new StringBuffer(""); 
+					  					String[] plistData = logFileData[i].split(",");
+					  					for(int s=1; s < plistData.length;s++) { sb.append(plistData[s] + ",");}%>
+Plist,<%=sb.toString()%><%}else if(logFileData[i].contains("Geom")) {
+					  					sb = new StringBuffer(""); 
+					  					String[] Geom = logFileData[i].split(",");
+					  					for(int s=1; s < Geom.length;s++) { sb.append(Geom[s] + ",");}%>
+Geom,<%=sb.toString()%><%}else if(logFileData[i].contains("Disc")) {
+					  					sb = new StringBuffer(""); 
+					  					String[] Disc = logFileData[i].split(",");
+					  					for(int s=1; s < Disc.length;s++) { sb.append(Disc[s] + ",");}%>
+Disc,<%=sb.toString()%><%}else if(logFileData[i].contains("Tran")) {
+					  					sb = new StringBuffer(""); 
+					  					String[] transData = logFileData[i].split(",");
+					  					for(int j=1; j < transData.length;j++) { sb.append(transData[j] + ",");}%>
+Trans,<%=sb.toString()%><%}else if(logFileData[i].contains("Appl")) {
+					  					sb = new StringBuffer(""); 
+					  					String[] appData = logFileData[i].split(",");
+					  					for(int x=1;x<appData.length;x++) { sb.append(appData[x] + ",");}%>
+Appl,<%=sb.toString()%><%}else if(logFileData[i].contains("Sock")) {
+										sb = new StringBuffer(""); 
+										String[] sockData = logFileData[i].split(",");
+										for(int x=1;x<sockData.length;x++) { sb.append(sockData[x] + ",");}%>
+Sock,<%=sb.toString()%><%}}}%>
+					<%}catch(Exception e){System.out.print("exception:" + e.getMessage());}%>

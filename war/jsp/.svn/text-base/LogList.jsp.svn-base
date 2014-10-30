@@ -1,0 +1,154 @@
+
+<%-- 
+  - Author(s): Siva prasad reddy
+  - Date: Feb 28th 2011
+  - Copyright Notice: Copyright ? 2011 Sony Corporation.
+  - Description: User List Page
+ --%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jstl/fmt_rt" prefix="fmt"%>
+<%@ taglib  uri="customTags"  prefix="time" %>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<title>Bandwidth Log List Page</title>
+</head>
+<%@page import="java.text.*,java.io.*,java.util.*"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="com.sony.constant.BWAController" %>
+<%@page import="com.sony.model.HeaderInfo" %>
+<%@page import="com.sony.bean.SearchCretria" %>
+<%@page import="com.sony.util.PaginationUtil" %>
+<link rel="stylesheet" href="css/footer.css" />
+<link rel="stylesheet" href="css/popupDiv.css" />
+<script type="text/javascript" src="../js/popupDiv.js"></script>
+<script type="text/javascript" src="../js/log.js"></script>
+<jsp:include page="session.jsp"/>
+<body style="background-image:url(images/bg7.jpg); background-repeat:repeat; background-position: 10% 10%; width:auto; height:auto">
+<form name="log_list">
+	<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0" class="tablefont">  <!--holder start-->
+		<tr width="100%">
+			<td>
+				<c:choose>
+					<c:when test="${userRole == 'Admin'}">
+						<jsp:include page="Header.jsp"/>
+					</c:when>
+					<c:otherwise>
+						<jsp:include page="UserHeader.jsp"/>
+					</c:otherwise>  
+				</c:choose>
+				</td>
+		</tr>
+		<tr>
+			<td align="center" >
+				<table width="20%" border="0" align="center">
+			  		<tr>
+						<td width="80%" height="10" align="center">
+						  <B><h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bandwidth Log List Page</h4></B>
+						</td>  
+			  		</tr>
+	    		</table>
+				<table width="80%" border="0" class="tablefont">
+			  		<tr>
+						<td width="80%" height="40%" align="center">
+							<jsp:include page="searchScreen.jsp"/>
+                  			<br>
+                  			<c:if test="${listDisplayed != null}">
+            				<table width="10%" border="0" align="center">
+            		  			<tr>
+            		    			<td>
+            		    				<input type="button" style="background:#003366; border-color:#003366; color:#ffffff;" name="Prev" value=" Prev "onclick="prevPage()" <c:if test="${paginationUtil.showPrevious == false}">disabled='disabled'</c:if>/>
+            		    			</td>
+            						<td>
+            							<label>
+            								<input type="text" style="background-color:#CCCCCC" name="pageNo" value='<c:out value="${paginationUtil.currentPage}"/>/<c:out value="${paginationUtil.totalPages}"/>' readonly="true" size="10"/>
+            							</label>
+            						</td>
+            						<td>
+            							<input type="button" style="background:#003366; border-color:#003366; color:#ffffff;" name="Next" value=" Next "onclick="nextPage()" <c:if test="${paginationUtil.showNext == false}">disabled='disabled'</c:if>/> 
+            						</td>
+            						<td>
+            							<input type="button" style="background:#003366; border-color:#003366; color:#ffffff;" name="Jump" value="Jump to Page" onclick="jumpToPage(${paginationUtil.totalPages},${paginationUtil.currentPage})"/> 
+            						</td>
+            					</tr>
+            		  		</table>
+            				</c:if><br>
+				 			<div align="center" style="overflow:scroll; height:500px;width:100%;">
+								<table width="100%" border="1" align="center" bordercolor="#999999" cellspacing="0" class="tablefont">
+									<th align="center" bgcolor="#0099FF">&nbsp;S.No</th>
+								 	<th align="center" bgcolor="#0099FF">&nbsp;Header Id</th>
+								 	<th align="center" bgcolor="#0099FF">&nbsp;Validity</th>
+								  	<th align="center" bgcolor="#0099FF">&nbsp;Logged Date/Time</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Client IP Address</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Client Id</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Loc</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Internet Access</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Interface Name</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Test Content</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Playback Date/Time</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Playback Duration<br>[HH:mm:ss:SSS]</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Max Bitrate</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Avg. Bitrate</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Min. Bitrate</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Comments</th>
+								  	<c:if test="${listDisplayed == null}">
+								 		<tr align="center">
+								 		<td colspan="16">
+								 			<b>No Records Available</b>
+								 		</td>
+								 		</tr>
+							 		</c:if>
+							 		<c:forEach var="headerInfo" items="${listDisplayed}" varStatus="loop">
+							 			<tr align="center" bgcolor="#CCCCCC">
+							 				<td>&nbsp;<c:out value="${(((paginationUtil.currentPage-1)*20) +  (loop.index + 1))}"/>
+							 				
+							 				</td>
+							 				<td><a href="javascript:detailLog('<c:out value="${headerInfo.header_Id}"/>','<c:out value="${(((paginationUtil.currentPage-1)*20) +  (loop.index + 1))}"/>')">
+							 					<c:choose><c:when test="${headerInfo.parent_Id == null}"><c:out value="${headerInfo.headerId}"/></c:when>
+													<c:otherwise><c:out value="${headerInfo.parent_Id}"/></c:otherwise> 
+												</c:choose>
+							 				</a>
+							 				</td>
+							 				
+							 				<td id="<c:out value="${headerInfo.headerId}"/>"><a href="javascript:makeValidInValid('<c:out value="${headerInfo.headerId}"/>','<c:out value="${headerInfo.validity}"/>','<c:out value="${(((paginationUtil.currentPage-1)*20) +  (loop.index + 1))}"/>')" >
+							 							<c:if test="${headerInfo.validity == 'TRUE' || headerInfo.validity == '' || headerInfo.validity == 'Valid'}">Valid</c:if> 
+														<c:if test="${headerInfo.validity == 'FALSE' || headerInfo.validity == 'Invalid'}">Invalid</c:if>
+														<c:if test="${headerInfo.validity == 'High_Valid'}">High Valid</c:if>  
+												</a>
+							 				</td>
+							 				<td>
+							 					<fmt:setLocale value="en_US"/>
+							 					<fmt:formatDate pattern="E dd MMM yyyy HH:mm:ss Z" value="${headerInfo.loggedDateTime}" />
+							 				</td>
+							 				<td>&nbsp;<c:out value="${headerInfo.client_Ip}"/></td>
+											<td>&nbsp;<c:out value="${headerInfo.client_Id}"/></td>
+											<td>&nbsp;<c:out value="${headerInfo.location}"/></td>
+											<td>&nbsp;<c:out value="${headerInfo.accessNetwork}"/></td>
+											<td>&nbsp;<c:out value="${headerInfo.interfaceName}"/></td>
+											<td>&nbsp;<c:out value="${headerInfo.testContent}"/></td>
+											<td>&nbsp;<c:out value="${headerInfo.playBackDateTime}"/></td>
+											<td>&nbsp;
+													<time:formater milliSeconds="${headerInfo.duration}" pattern="HH:mm:ss:SSS"/>
+											</td>
+											<td>&nbsp;<c:out value="${headerInfo.maxBitrateAppl}"/></td>
+											<td>&nbsp;<c:out value="${headerInfo.avgBitrateAppl}"/></td>
+											<td>&nbsp;<c:out value="${headerInfo.minBitrateAppl}"/></td>
+											<td>&nbsp;<c:out value="${headerInfo.comments}"/></td>
+							  			</tr>
+						 	 		</c:forEach> 
+								</table>
+							</div>
+							<br>
+			    		</td>
+			  		</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</form>
+	<jsp:include page="popupDiv.jsp"/>
+<jsp:include page="Footer.jsp"/>
+</BODY>
+</HTML>

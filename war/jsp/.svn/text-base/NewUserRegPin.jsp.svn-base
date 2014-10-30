@@ -1,0 +1,116 @@
+<%-- 
+  - Author(s): Susheel Kumar
+  - Date: December 2010
+  - Copyright Notice: Copyright © 2011 Sony Corporation.
+  - Description: New User Creation Should enter the Authentication Pin
+ --%>
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<title>New User Authentication Page</title>
+</head>
+<link rel="stylesheet" href="css/footer.css" />
+<link rel="SHORTCUT ICON" href="images/favicon.ico"/>
+<script>
+function loginPage()
+{
+	document.NewUserAuth.method="POST";
+	document.NewUserAuth.action="login.jsp"
+	document.NewUserAuth.submit();
+}
+function userAuth()
+{
+	if(document.NewUserAuth.auth_pin.value=="")
+	{
+		alert("Please enter the valid Authetication pin for registring as New User.");
+		//eval(document.newuser_page.pswd1.focus());
+		return false;
+	}
+	//document.NewUserAuth.method="POST";
+	document.NewUserAuth.action="/newUserAuth"
+	//document.NewUserAuth.submit();
+}
+</script>
+<%!
+String pinStatus=null;
+String Data="";
+%>
+<%
+pinStatus = request.getParameter("pinStatus");
+//out.println("pinStatus "+pinStatus);
+if((pinStatus!=null) && (pinStatus.equals("no")))
+{
+
+	Data = "Access Denied. Authetication Pin is not Correct.";
+}
+else
+{
+	Data = "";
+}
+
+
+%>
+<!--<body style="background-image: url(../icons/login2.gif);background-repeat:repeat;width:100%;height:100%;" bgColor="#00CCCC" onload=document.f1.login.focus()>-->
+<body style="background-image:url(images/bg7.jpg); background-repeat:repeat; background-position: 10% 10%; width:auto; height:auto" onload=document.NewUserAuth.auth_pin.focus() leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<form name="NewUserAuth" method="post">
+<table width="100%"  border="0" cellpadding="0" cellspacing="0" >
+  <tr>
+    <td align="left" valign="top" bgcolor="#333333">
+      <img src="/images/SonyBG.JPG" alt="" height="75" width="100%"/>
+   </td>
+  </tr>
+</table>
+<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">  <!--holder start-->
+
+<tr>
+	<td align="center" >
+		<p>&nbsp;</p>
+			<table width="469" border="0">
+			  <tr>
+				<td width="100%" height="10">
+				  <h1 align="center"><font face="Verdana, Helvetica, sans-serif" size="3" color="#000000">
+				  <B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;New
+				  User Authentication</B></FONT></h1></td>
+			  </tr>
+			  </table></br>
+			  <p align="center">
+			  <%
+				if(pinStatus!=null)
+				{
+			  %>
+	      <b>   <font color="#0099CC">  <%=Data%> </font> </b>
+			  <%}
+				else
+				{
+			  %>
+		     <b>  <font color="#0099CC">   <%=Data%> </font> </b>
+			  <%}%>
+			</p>
+<table width="40%" border="1" bordercolor="#999999" cellspacing="0">
+   <tr>
+    <td>Enter Authentication Pin </td>
+    <td><input type="password" name="auth_pin" size="32" maxlength="50"/></td>
+	<td align="center"><INPUT type="submit" value=" Submit " style="background:#003366; border-color:#003366; color:#ffffff;" onclick="userAuth()"></td>
+  </tr>
+</table><p>&nbsp;</p>
+<table width="100%" border="0" cellspacing="0">
+   
+	<td align="center"><INPUT type="button" value="Back To Login Page" style="background:#003366; border-color:#003366; color:#ffffff;" onclick="loginPage()"></td>
+  </tr>
+</table>
+</table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</form>
+<jsp:include page="Footer.jsp"/>
+</BODY>
+
+</HTML>

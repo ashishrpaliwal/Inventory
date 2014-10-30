@@ -1,0 +1,379 @@
+package com.sony.process;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.sony.bean.SearchCretria;
+import com.sony.constant.BWAController;
+import com.sony.model.HeaderInfo;
+import com.sony.model.LogFile;
+import com.sony.util.PaginationUtil;
+import com.sony.util.SessionPaginationUtil;
+
+public class ViewLogs extends HttpServlet {
+
+	private static final Logger log = Logger.getLogger(ViewLogs.class.getName());
+	public void doPost(HttpServletRequest req, HttpServletResponse res)
+			throws ServletException, IOException {
+		
+		List<HeaderInfo> headerdata = null;
+		String indexc = req.getParameter("index");
+		String logIndex = req.getParameter("LogIndex");
+		
+		if(logIndex == null || "".equalsIgnoreCase(logIndex)){
+			logIndex = indexc; 
+		}
+		
+		String header_id = req.getParameter("header_id");
+		List<HeaderInfo> headerList = (List<HeaderInfo>)req.getSession().getAttribute("headerList");
+		//System.out.println("headerList" + headerList.size());
+		if(header_id != null && !"".equalsIgnoreCase(header_id)){
+			headerdata = BWAController.INSTANCE.getHeaderDetail(header_id);
+		}
+		if(headerList == null || headerList.size() == 0){
+				if(headerdata != null && !headerdata.isEmpty()){
+					HeaderInfo headerinfo = headerdata.get(0);
+					int tempLogIndex = getHeaderList( req, res ,headerinfo);
+					if(logIndex == null || "".equalsIgnoreCase(logIndex)){
+						logIndex = String.valueOf(tempLogIndex); 
+					}
+				}else{
+					//res.sendRedirect("jsp/LogList.jsp");
+				}
+		}else if(logIndex == null || "".equalsIgnoreCase(logIndex)){
+			HeaderInfo headerinfo = headerdata.get(0);
+			int tempLogIndex = getHeaderList( req, res ,headerinfo);
+			if(logIndex == null || "".equalsIgnoreCase(logIndex)){
+				logIndex = String.valueOf(tempLogIndex); 
+			}
+		}
+		/*else{
+			SearchCretria s = (SearchCretria)req.getSession().getAttribute("searchCretria");
+			if(headerdata != null && !headerdata.isEmpty()){
+				HeaderInfo headerinfo = headerdata.get(0);
+				
+				if(!headerinfo.getValidity().equalsIgnoreCase(s.getValidity())){
+					System.out.println("calling before header List.....2");
+					//getHeaderList( req, res ,headerinfo.getValidity());
+				}
+			}else{
+				//res.sendRedirect("jsp/LogList.jsp");
+			}
+		}*/
+		headerList = (List<HeaderInfo>)req.getSession().getAttribute("headerList");
+		//System.out.println("headerList2:" + headerList.size());
+		PaginationUtil paginationUtil = (PaginationUtil) req.getSession().getAttribute("paginationUtil");
+		System.out.println("logIndex:" + logIndex);
+		int tempLogIndex = Integer.parseInt(logIndex);
+		int pageNo = (tempLogIndex/1000) + (tempLogIndex%1000 > 0?1:0);
+		
+		System.out.println("tempLogIndex1::::" + tempLogIndex);
+		System.out.println("pageNo::::" + pageNo);
+		System.out.println("paginationUtil.getCurrentSessionPage()::::" + paginationUtil.getCurrentSessionPage());
+		
+		
+		/********************************/
+		if(pageNo != paginationUtil.getCurrentSessionPage()){
+			SearchCretria s = (SearchCretria)req.getSession().getAttribute("searchCretria");
+			SessionPaginationUtil sessionPageUtil  = (SessionPaginationUtil) req.getSession().getAttribute("sessionPageUtil");
+			int fromIndex = ((pageNo-1) *1000);
+			int toIndex = pageNo * 1000;
+			if(toIndex > paginationUtil.getTotalSize()){
+				toIndex = paginationUtil.getTotalSize();
+			}
+			List<HeaderInfo> headerList1 = BWAController.INSTANCE.getMatchedLogs(s);
+			calculateMinMaxAvgBitrate(headerList1, s,null);
+			int totalSize = headerList1.size();
+			List<HeaderInfo> list = new ArrayList(headerList1.subList(fromIndex,toIndex));
+			req.getSession().setAttribute("headerList", list);
+			sessionPageUtil.setCurrentSessionPage(pageNo);
+			paginationUtil.setCurrentSessionPage(pageNo);
+			System.out.println("pageNoInside::::" + pageNo);
+			req.getSession().setAttribute("paginationUtil", paginationUtil);
+			req.getSession().setAttribute("sessionPageUtil", sessionPageUtil);
+			req.getSession().setAttribute("headerList",list);
+			headerList = list;
+		}
+		/********************************/
+		int tempLogIndex1 = tempLogIndex % 1000 == 0?tempLogIndex: tempLogIndex % 1000;
+		HeaderInfo header = headerList.get((tempLogIndex1-1));
+		header_id = header.getHeader_Id().toString();
+		boolean next = false;
+		boolean prev = false;
+		boolean flag = false;
+		
+		if((tempLogIndex-1) == 0){
+			prev = false;
+		}else
+		{
+			prev = true;
+		}
+		if((tempLogIndex-1) == (paginationUtil.getTotalSize()-1)){
+			next = false;
+		}else{
+			next = true;
+		}
+		req.getSession().setAttribute("p",prev);
+		req.getSession().setAttribute("n",next);
+		req.getSession().setAttribute("index",tempLogIndex);
+		/*if(header_id == null && indexc != null){
+			HeaderInfo header = headerList.get(Integer.parseInt(indexc));
+			header_id = header.getHeader_Id().toString();
+		}
+		boolean next = false;
+		boolean prev = false;
+		boolean flag = false;
+		System.out.println("indexc:" + indexc);
+		for(HeaderInfo headerinfo: headerList){
+			if(header_id.equalsIgnoreCase(headerinfo.getHeader_Id().toString())){
+				flag = true;
+				System.out.println("displayed Header Id: " + headerinfo.getHeader_Id().toString() );
+				System.out.println("displayed Header Id:2222: " + header_id);
+				int index = headerList.indexOf(headerinfo);
+				
+				if(index == 0){
+					prev = false;
+				}else
+				{
+					prev = true;
+				}
+				if(index == (headerList.size()-1)){
+					next = false;
+				}else{
+					next = true;
+				}
+				req.getSession().setAttribute("p",prev);
+				req.getSession().setAttribute("n",next);
+				req.getSession().setAttribute("index",index);
+				System.out.println("index:" + index);
+				break;
+			}
+		}*/
+		/*if(!flag){
+			System.out.println("Reaching here......");
+			//res.sendRedirect("jsp/LogList.jsp");
+		}*/
+		if(header_id != null && !"".equalsIgnoreCase(header_id)){
+    	//if (!(StringUtil.isEmpty(header_id))) {
+    		BWAController bwac = BWAController.INSTANCE;
+    		try{
+    			headerdata = bwac.getHeaderDetail(header_id);
+    			List<LogFile> logdata = bwac.getLogDetail(header_id);
+    			LogFile log_list_obj = logdata.get(0);
+    			String[] logFileData = log_list_obj.getLogFile().getValue().split(">");
+    			//ArrayList<String> appListduration = new ArrayList<String>();
+    			long duration = 1;
+    			long sum = 0;
+    			long grandTotal = 0;
+    			boolean sockflag = false;
+    			StringBuffer sb = new StringBuffer();
+    			StringBuffer sb1 = new StringBuffer();
+				for (int i = 0; i < logFileData.length; i++) {
+					if (logFileData[i].startsWith("<Appl")) {
+						String[] appData = logFileData[i].split(",");
+						for (int j = 1; j < appData.length; j = j +2) {
+							String temp = "";
+							if (!appData[j].equals("") && !appData[j+1].equals("")) {
+					   			long appduration = Integer.parseInt(appData[ j ]);
+					   			long appTmp = Integer.parseInt(appData[j + 1]);
+					   			try{
+					   				appTmp = (appTmp*8)/(appduration);
+					   			}catch(Exception e){
+					   				log.info("(appTmp) is assigned to 0 when (appduration) is:" + appduration);
+					   				appTmp = 0;
+					   				appduration = 0;
+					   			}
+					   			
+								temp = appduration + ";" + appTmp + "-"; 
+								grandTotal += appduration; 
+								long tempsum = sum + appduration;
+								if(tempsum <= (duration*60000)){
+									//appListduration.add(temp);
+									sum += appduration;	
+									sb.append(temp);
+								}else{
+									duration = duration + 1;
+									sum += appduration;	
+									sb.append("Spliter");
+									sb.append(temp);
+								}
+							}
+						}
+					} else if (logFileData[i].contains("<Sock")) {
+						String[] sockData = logFileData[i].split(",");
+						if(sockData.length > 0 && !(sockflag)){
+							sockflag = true;
+						}
+						for (int j = 1; j < sockData.length; j = j + 3) {
+							String temp = "";
+							if (!sockData[j].equals("") && !sockData[j+1].equals("")) {
+					   			long appduration = Integer.parseInt(sockData[ j ]);
+					   			long appTmp = Integer.parseInt(sockData[j + 1]);
+					   			try{
+					   				appTmp = (appTmp*8)/(appduration);
+					   			}catch(Exception e){
+					   				//System.out.println("Exception caught due to duration = 0");
+					   				log.info("(appTmp) is assigned to 0 when (appduration) is:" + appduration);
+					   				appTmp = 0;
+					   				appduration = 0;
+					   			}
+					   			
+								temp = appduration + ";" + appTmp + "-"; 
+								grandTotal += appduration; 
+								long tempsum = sum + appduration;
+								if(tempsum <= (duration*60000)){
+									//appListduration.add(temp);
+									sum += appduration;	
+									sb1.append(temp);
+								}else{
+									duration = duration + 1;
+									sum += appduration;	
+									sb1.append("Spliter");
+									sb1.append(temp);
+								}
+							}
+						}
+					} else if (logFileData[i].contains("<Tran")) {
+						String[] transData = logFileData[i].split(",");
+						String temp1 = "";
+						
+						
+						//temp1 = transData[6]  + ";" + "0;" + transData[1] + "-" + transData[7]  + ";" + "0" + "-";
+						temp1 = transData[6]  + ";" + "0;" + transData[1] + ";0" + "-" + transData[7]  + ";" + "0" + "-";
+						sb.append(temp1);
+						sb1.append(temp1);
+					}
+				}
+				if(sb.length() != 0){
+					req.getSession().setAttribute("sbuffer", sb.toString());
+					req.getSession().setAttribute("grandTotal", grandTotal);
+				}else{
+					req.getSession().setAttribute("sbuffer", "");
+					req.getSession().setAttribute("grandTotal", 0);
+				}
+				if(sb1.length() != 0 && sockflag){
+					req.getSession().setAttribute("sbuffer1", sb1.toString());
+				}else{
+					req.getSession().setAttribute("sbuffer1", "");
+				}
+				
+    		}catch(Exception e){
+    			System.out.println("exception:" + e.getMessage());
+    			e.printStackTrace();
+    		}
+			 
+			if(!(headerdata.isEmpty())){
+				req.getSession().setAttribute("headerDetail", headerdata.get(0));
+			}
+		res.sendRedirect("jsp/ViewLog.jsp?header_id=" + header_id);
+		//res.sendRedirect("jsp/ViewLog.jsp");
+		}
+		
+	}
+
+	public void doGet(HttpServletRequest req, HttpServletResponse res)
+			throws ServletException, IOException {
+		doPost(req,res);
+	}
+	public int getHeaderList(HttpServletRequest req, HttpServletResponse res,HeaderInfo headerInfo) throws ServletException, IOException{
+		SearchLogFiles search = new SearchLogFiles();
+		int tempLogIndex = 0;
+		//search.doGet(req, res);
+		try {
+			List<HeaderInfo> headerList = null;
+			req.getSession().removeAttribute("searchCretria");
+			SearchCretria searchCretria = new SearchCretria();
+			//searchCretria.setValidity(headerInfo.getValidity());
+			searchCretria.setValidity("");
+			headerList = BWAController.INSTANCE.getRecentHeaderId(searchCretria.getValidity());
+			int totalSize = headerList.size();
+			searchCretria = calculateMinMaxAvgBitrate(headerList, searchCretria,headerInfo.getHeader_Id().toString());
+			SessionPaginationUtil sessionPageUtil = new SessionPaginationUtil(1000,totalSize);
+			PaginationUtil paginationUtil = new PaginationUtil(20,totalSize);
+			tempLogIndex = searchCretria.getIndexOfLog() + 1;
+			int pageNo = (tempLogIndex/1000) + (tempLogIndex%1000 > 0?1:0);
+			int fromIndex = ((pageNo-1) *1000);
+			int toIndex = pageNo * 1000;
+			if(toIndex > totalSize){
+				toIndex = totalSize;
+			}
+			System.out.println("fromIndex:" + fromIndex);
+			System.out.println("toIndex:" + toIndex);
+			System.out.println("pageNo:" + pageNo);
+			System.out.println("tempLogIndex:" + tempLogIndex);
+			List<HeaderInfo> list = new ArrayList(headerList.subList(fromIndex,toIndex));
+			sessionPageUtil.setCurrentSessionPage(pageNo);
+			paginationUtil.setCurrentSessionPage(pageNo);
+			req.getSession().setAttribute("searchCretria", searchCretria);
+			req.getSession().setAttribute("headerList", list);
+			req.getSession().setAttribute("paginationUtil", paginationUtil);
+			req.getSession().setAttribute("sessionPageUtil", sessionPageUtil);
+			req.getSession().setAttribute("headerList",list);
+			if (headerList.isEmpty()) {
+				req.getSession().removeAttribute("headerList");
+				req.getSession().removeAttribute("listDisplayed");
+				// need to handle the error condition
+			} else {
+				//setDisplayList(req, res, list,totalSize);
+			}
+		}catch(Exception e){
+			System.out.println("called..exception.");
+			e.printStackTrace();
+		}
+	return tempLogIndex;	
+	}
+	
+	
+	public void setDisplayList(HttpServletRequest req, HttpServletResponse res, List<HeaderInfo> headerList,int totalSize) {
+		PaginationUtil paginationUtil = new PaginationUtil(20,totalSize);
+		paginationUtil.nextPage();
+		SessionPaginationUtil sessionPageUtil = new SessionPaginationUtil(1000,totalSize);
+		paginationUtil.setCurrentPage(sessionPageUtil.getCurrentSessionPage());
+		int toIndex = paginationUtil.getToIndex() > totalSize ? totalSize : paginationUtil.getToIndex();
+		List<HeaderInfo> listDisplayed = new ArrayList(headerList.subList(paginationUtil.getFromIndex(), toIndex));
+		req.getSession().setAttribute("listDisplayed", listDisplayed);
+		req.getSession().setAttribute("headerList", headerList);
+		req.getSession().setAttribute("paginationUtil", paginationUtil);
+		req.getSession().setAttribute("sessionPageUtil", sessionPageUtil);
+	}
+	
+	public SearchCretria calculateMinMaxAvgBitrate(List<HeaderInfo> list, SearchCretria searchCretria , String headerId){
+		long avg = 0;
+		float sum = 0.0f;
+		long max_bit_rate=0;
+		long min_bit_rate=0;
+		int indexOfLog = 0;
+		if(!(list.isEmpty())){
+			max_bit_rate = list.get(0).getMaxBitrateAppl();
+			min_bit_rate = list.get(0).getMinBitrateAppl();
+			for(HeaderInfo headerinfo: list){
+				
+					if(headerId != null){
+						if(headerId.equalsIgnoreCase(headerinfo.getHeader_Id().toString())){
+							indexOfLog = list.indexOf(headerinfo);
+							searchCretria.setIndexOfLog(indexOfLog);
+						}
+					}
+				sum += headerinfo.getAvgBitrateAppl();
+				if(headerinfo.getMinBitrateAppl() < min_bit_rate){
+					min_bit_rate = headerinfo.getMinBitrateAppl();
+				}
+				if(headerinfo.getMinBitrateAppl() > max_bit_rate){
+					max_bit_rate = headerinfo.getMinBitrateAppl();
+				}		
+			}
+			avg = (long) (sum/list.size());;
+			searchCretria.setAvg(avg);
+			searchCretria.setMax(max_bit_rate);
+			searchCretria.setMin(min_bit_rate);
+		}
+		return searchCretria;
+	}
+}

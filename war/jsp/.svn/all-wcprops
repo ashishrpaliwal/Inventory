@@ -1,0 +1,131 @@
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/BW_Analyzer/!svn/ver/309/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp
+END
+EditUser.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/EditUser.jsp
+END
+NewUserReg.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/NewUserReg.jsp
+END
+UserHeader.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/UserHeader.jsp
+END
+MigrateFile.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/MigrateFile.jsp
+END
+Header.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/Header.jsp
+END
+welcome.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/welcome.jsp
+END
+NewUserRegPin.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/NewUserRegPin.jsp
+END
+Footer.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/Footer.jsp
+END
+DeleteLog.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/DeleteLog.jsp
+END
+FeedLog.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/FeedLog.jsp
+END
+searchScreen.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/searchScreen.jsp
+END
+popupDiv.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/BW_Analyzer/!svn/ver/309/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/popupDiv.jsp
+END
+login.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/login.jsp
+END
+DownloadLog.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/BW_Analyzer/!svn/ver/309/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/DownloadLog.jsp
+END
+logout.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/logout.jsp
+END
+UserList.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/UserList.jsp
+END
+ViewLog.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/BW_Analyzer/!svn/ver/309/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/ViewLog.jsp
+END
+LogList.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/BW_Analyzer/!svn/ver/309/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/LogList.jsp
+END
+ShowFile.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/ShowFile.jsp
+END
+PasswordRecovery.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/PasswordRecovery.jsp
+END
+session.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/jsp/session.jsp
+END

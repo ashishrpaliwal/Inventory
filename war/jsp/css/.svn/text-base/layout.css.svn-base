@@ -1,0 +1,230 @@
+
+.dataconttab1{
+ margin-top:20px;
+}
+.nav{
+margin-left:12px;
+}
+.newprojects{
+margin-top:30px;
+
+}
+.newprojects a{
+ text-decoration:none;
+ color:white;
+
+}
+.newprojects a:hover{
+text-decoration:underline;
+}
+.arrow{
+   padding-top:8px;
+}
+.footer{
+    /*background-color:#e5e8ed;*/
+    background-color:#46719c;
+	color:#000000;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:11px;
+	
+}
+.footer1{
+   
+	color:#000000;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:11px;
+	
+}
+.text {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+.textbold2 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	color: #309CE4;
+	text-decoration: none;
+	font-weight: bold;
+
+}
+.text1 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: black;
+	text-decoration: none;
+}
+.menubt{
+background:url(images/menubut.jpg);
+width:210px;
+height:33px;
+
+}
+.hi{
+color:white;
+}
+
+.menubt .navItems
+{
+	margin-left:50px;
+	
+}
+
+
+
+
+
+
+/*===========================================*/
+.cssvertical{
+margin-left:0px;
+
+margin-top:25px;
+}
+
+
+	
+.cssvertical ul {
+text-align: left;
+list-style: none;
+margin: 0px;
+padding: 0px;
+width:230px;
+
+	}
+	
+.cssvertical ul li {
+width:230px;
+display: block;
+margin: 0;
+padding: 0;
+
+	}
+	
+.cssvertical li ul {
+	position: absolute;
+	left: 180px; /* Set 1px less than menu width */
+
+    display: none;
+	
+	}
+
+/* Styles for Menu Items */
+.cssvertical ul li a {
+display: block;
+margin:0;
+width:194px;
+padding-top:6px;
+*padding-top:9px;
+padding-bottom:8px;
+*padding-bottom:7px;
+padding-left:40px;
+padding-right:10px;
+color: #315E88;
+font-family:Verdana,Arial, Helvetica, sans-serif;
+font-size:13px;
+color: #315E88;
+font-weight:bold;
+*font-family:Verdana, Arial, Helvetica, sans-serif;
+*font-size:13px;
+text-decoration: none;
+background:url(../images/navbutton.jpg) no-repeat left top;
+
+        }
+.cssvertical ul li a:hover{ /*Theme Change here*/
+
+padding-left:40px;
+color:#9e5f07;
+
+
+
+}
+/* Holly Hack. IE Requirement \*/
+* html ul li { float: left; height: 1%; }
+* html ul li a { height: 1%; }
+/* End */
+
+.cssvertical li:hover ul, li.over ul { display: block; } 
+.cssvertical li:hover ul ul, li.over ul ul {display: none;} 
+.cssvertical ul ul li:hover ul, ul ul li.over ul {display: block;}
+
+.thinBorderTable {
+	border-top: 1px solid #000033;
+	border-bottom: 1px solid #000033;
+	border-left: 1px solid #000033;
+	border-right: 1px solid #000033;
+}
+
+.thinBorderTable1 {
+	border-top: 1px solid #CC6600;
+	border-bottom: 1px solid #CC6600;
+	border-left: 1px solid #CC6600;
+	border-right: 1px solid #CC6600;
+	
+	}
+.thinBorderTable2 {
+	border-top: 1px solid #46719c;
+	border-bottom: 1px solid #46719c;
+	border-left: 1px solid #46719c;
+	border-right: 1px solid #46719c;
+	color:#003399;
+    font-size:12px;
+    font-family:verdana;
+	padding-left:5px;
+	padding-right:2px;
+	font-weight:bold;
+	height:25px;
+	letter-spacing:normal;
+	}
+
+.thinBorderTable3 {
+	border-top: 1px solid #003399;
+	border-bottom: 1px solid #003399;
+	border-left: 1px solid #003399;
+	border-right: 1px solid #003399;
+	color:#003399;
+    font-size:12px;
+    font-family:verdana;
+	padding-left:5px;
+	padding-right:2px;
+	font-weight:bold;
+	height:25px;
+	letter-spacing:normal;
+	}
+	.thinBorderTable4 {
+	border-top: 1px solid #333333;
+	border-bottom: 1px solid #333333;
+	border-left: 1px solid #333333;
+	border-right: 1px solid #333333;
+	color:#003399;
+    font-size:12px;
+    font-family:verdana;
+	padding-left:5px;
+	padding-right:2px;
+	font-weight:bold;
+	height:25px;
+	letter-spacing:normal;
+	}
+	.thinBorderTable5 {
+	border-top: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	border-left: 1px solid #FFFFFF;
+	border-right: 1px solid #FFFFFF;
+	color:#003399;
+    font-size:12px;
+    font-family:verdana;
+	padding-left:5px;
+	padding-right:2px;
+	font-weight:bold;
+	height:25px;
+	letter-spacing:normal;
+	}
+
+#table_scroll{
+display:block;
+
+
+
+}

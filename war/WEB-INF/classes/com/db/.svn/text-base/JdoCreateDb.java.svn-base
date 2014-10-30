@@ -1,0 +1,31 @@
+package com.sony.db;
+
+
+import java.io.*;
+import java.util.*;
+import javax.jdo.*;
+
+public class JdoCreateDb
+{
+   public static void main(String args[])
+   {
+      try
+      {
+    	  InputStream fis = new FileInputStream("jdo.properties");
+    	  Properties props= new Properties();
+    	  props.load(fis);
+    	  props.put("com.sun.jdori.option.ConnectionCreate","true");
+
+    	  PersistenceManagerFactory factory = JDOHelper.getPersistenceManagerFactory(props);
+          PersistenceManager manager = factory.getPersistenceManager();
+
+          Transaction tx = manager.currentTransaction();
+          tx.begin();
+          tx.commit();
+      }
+      catch(Exception e1) {
+    	  System.out.println("Db Exception== "+e1); 
+      }
+   }
+}
+

@@ -1,0 +1,23 @@
+/*
+ * Author: Susheel Kumar
+ * Classname: PMF.java
+ * Version information: 1.0
+ * Date:01/01/2011
+ * Copyright © 2011 Sony Corporation. All rights reserved.
+ */
+
+package com.sony.constant;
+
+import javax.jdo.JDOHelper;
+import javax.jdo.PersistenceManagerFactory;
+
+public final class PMF {
+    private static final PersistenceManagerFactory pmfInstance =
+        JDOHelper.getPersistenceManagerFactory("transactions-optional");
+
+    private PMF() {}
+
+    public static PersistenceManagerFactory get() {
+        return pmfInstance;
+    }
+}

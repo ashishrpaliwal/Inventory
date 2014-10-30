@@ -1,0 +1,139 @@
+<%-- 
+  - Author(s): Susheel Kumar
+  - Date: December 2010
+  - Copyright Notice: Copyright © 2011 Sony Corporation.
+  - Description: User Details Edit Page for Admins
+ --%>
+ 
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<title>Edit User Account Page</title>    
+</head>
+<%@ page import="java.text.*,java.io.*,java.util.*"%>
+<%@page import="java.util.ArrayList"%>
+<%@ page import="com.sony.model.UserDetails" %>
+<%@ page import="com.sony.constant.BWAController" %>
+<link rel="stylesheet" href="css/footer.css" />
+<script type="text/javascript" src="../js/user.js"></script>
+<jsp:include page="session.jsp"/>
+<c:set var="modifystatus" value='<%=request.getParameter("modifyStatus")%>'/>
+<body style="background-image:url(images/bg7.jpg); background-repeat:repeat; background-position: 10% 10%; width:auto; height:auto" onload="document.edituser_page.first_name.focus()">
+	<c:choose>
+		<c:when test="${userRole == 'Admin'}">
+			<jsp:include page="Header.jsp"/>
+		</c:when>
+		<c:otherwise>
+			<jsp:include page="UserHeader.jsp"/>
+		</c:otherwise>
+	</c:choose>
+<form name="edituser_page" method="post">
+<br><br>
+<table width="100%"  border="0" cellspacing="0" cellpadding="0"> 
+	<tr>
+		<td align="center" >
+				<table width="469" border="0" align="center">
+				  	<tr>
+						<td width="100%" height="10">
+							  <h1 align="center">
+							  		<font face="Verdana, Helvetica, sans-serif" size="3" color="#000000">
+							  			<B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Edit User Details</B>
+							  		</FONT>
+							  </h1>
+						 </td>
+				  	</tr>
+	    		</table><br>
+	    		<c:if test="${user == null}">
+				 	<tr align="center">
+				 		<td colspan="11">
+							<b>User is not available/selected for edit</b>
+				 		</td>
+				 	</tr>
+				</c:if> 
+				<c:if test="${user != null}">
+				<p align="center">
+						<c:choose>
+							<c:when test="${modifystatus != null && modifystatus == 'yes'}">
+								<font color="#0099CC"> USER MODIFIED SUCCESSFULLY </font>
+							</c:when>
+							<c:when test="${modifystatus != null && modifystatus == 'NO'}">
+								<font color="#0099CC"> USER NOT MODIFIED SUCCESSFULLY </font>
+							</c:when>
+						</c:choose>
+					</p>
+				<table width="50%" border="1" align="center">
+					<tr>
+						<td>&nbsp;First Name <font color="red">*</font></td>
+					    <td><input type="text" name="first_name"  value='<c:out value="${user.firstName}"/>' maxlength="25"/></td>
+					    <td>&nbsp;Password <font color="red">*</font></td>
+					    <td><input type="password" name="pswd1"  value='<c:out value="${user.userPassword}"/>' maxlength="15"/></td>
+					</tr>
+					<tr>
+					    <td>&nbsp;Last Name <font color="red">*</font></td>
+					    <td><input type="text" name="last_name"  value='<c:out value="${user.lastName}"/>' maxlength="25"/></td>
+					    <td>&nbsp;Confirm Password <font color="red">*</font></td>
+					    <td><input type="password" name="pswd2"  value='<c:out value="${user.userPassword}"/>' maxlength="15"/></td>
+					</tr>
+  					<tr>
+					    <td>&nbsp;Login Id <font color="red">*</font></td>
+					    <td><input type="text" name="login_id"  value='<c:out value="${user.login_Id}"/>'  maxlength="50"/></td>
+					    <td>&nbsp;Location</td>
+					    <td>
+					    	<select name="location" >
+								<option value="Australia" <c:if test="${user.userLocation == 'Australia'}">selected</c:if>>Australia</option>
+					      		<option value="Canada" <c:if test="${user.userLocation == 'Canada'}">selected</c:if>>Canada</option>
+					      		<option value="France" <c:if test="${user.userLocation == 'France'}">selected</c:if>>France</option>
+					      		<option value="Germany" <c:if test="${user.userLocation == 'Germany'}">selected</c:if>>Germany</option>
+					      		<option value="India" <c:if test="${user.userLocation == 'India'}">selected</c:if>>India</option>
+					      		<option value="Italy" <c:if test="${user.userLocation == 'Italy'}">selected</c:if>>Italy</option>
+					      		<option value="Japan" <c:if test="${user.userLocation == 'Japan'}">selected</c:if>>Japan</option>
+					      		<option value="Spain" <c:if test="${user.userLocation == 'Spain'}">selected</c:if>>Spain</option>
+					      		<option value="UK" <c:if test="${user.userLocation == 'UK'}">selected</c:if>>UK</option>
+					      		<option value="US" <c:if test="${user.userLocation == 'US'}">selected</c:if>>US</option>
+					      		<option value="Others" <c:if test="${user.userLocation == 'Others'}">selected</c:if>>Others</option>
+					        </select>	
+     					</td>
+  					</tr>
+  					<tr>
+					    <td>&nbsp;Account Type</td>
+					    <td>
+   							<select name="Acc_type" >
+   								<c:choose>
+									<c:when test="${userRole == 'Admin'}">
+										<option value="Admin" <c:if test="${user.userRole == 'Admin'}">selected</c:if>>Admin</option> 
+										<option value="User" <c:if test="${user.userRole == 'User'}">selected</c:if>>User</option>
+									</c:when>
+									<c:otherwise>
+										<option value="User" <c:if test="${user.userRole == 'User'}">selected</c:if>>User</option>
+									</c:otherwise>
+								</c:choose>
+   							</select>	
+					    </td>
+					    <td>&nbsp;Enable User Account</td>
+					    <td>&nbsp;<input type="checkbox" name="EUA" <c:out value="${user.userStatus}"/> /></td>
+  					</tr>	
+  					<tr>
+					    <td colspan="2" align="center"><input  type="button" style="background:#003366; border-color:#003366; color:#ffffff;" onclick="userModify(user_Id)" value=" Submit " /></td>
+					    <td colspan="2" align="center">
+					    	<c:choose>
+								<c:when test="${userRole != null && userRole == 'Admin'}">
+									<input name="cancel" type="submit" style="background:#003366; border-color:#003366; color:#ffffff;" onclick="userListPage()" value=" Cancel " />
+								</c:when>
+								<c:when test="${userRole != null && userRole == 'User'}">
+									<input name="cancel" type="submit" style="background:#003366; border-color:#003366; color:#ffffff;" onclick="welcomePage()" value=" Cancel " />
+								</c:when>
+							</c:choose>
+					    </td>
+  					</tr>
+				</table>
+				</c:if>
+		</td>
+	</tr>
+</table>
+<input type="hidden" name="user_Id" value='<c:out value="${user.user_Id}"/>'/>
+</form>
+<jsp:include page="Footer.jsp"/>
+</BODY>
+</HTML>

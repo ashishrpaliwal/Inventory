@@ -1,0 +1,193 @@
+/*
+ * Author: Susheel Kumar
+ * Classname: CreateUser.java
+ * Version information: 1.0
+ * Date:01/01/2011
+ * Copyright © 2011 Sony Corporation. All rights reserved.
+ */
+
+package com.sony.process;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+//import com.google.appengine.repackaged.com.google.common.base.StringUtil;
+import com.sony.constant.BWAController;
+import com.sony.model.UserDetails;
+import com.sony.util.PaginationUtil;
+
+public class UserServlet extends HttpServlet {
+
+	private static final Logger log = Logger.getLogger(UserServlet.class.getName());
+	
+    public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException, IOException
+    {
+    	String action = req.getParameter("action");
+    	   	
+    	//if (!(StringUtil.isEmpty(action)) && action.equalsIgnoreCase("get")) {
+		if(action != null && !"".equalsIgnoreCase(action) && action.equalsIgnoreCase("get")){
+    		doGet(req,res);
+		//}else if (!(StringUtil.isEmpty(action)) && action.equalsIgnoreCase("modify")) {
+		}else if(action != null && !"".equalsIgnoreCase(action) && action.equalsIgnoreCase("modify")){
+    		modifyUser(req,res);
+		}
+		//else if(!(StringUtil.isEmpty(action)) && action.equalsIgnoreCase("create")){
+		else if(action != null && !"".equalsIgnoreCase(action) && action.equalsIgnoreCase("create")){
+			createUser(req,res);
+		}
+		//else if(!(StringUtil.isEmpty(action)) && action.equalsIgnoreCase("edit")){
+		else if(action != null && !"".equalsIgnoreCase(action) && action.equalsIgnoreCase("edit")){
+			editUser(req,res);
+		}
+    	
+    	else{
+			setPagination(req,res);
+			res.sendRedirect("jsp/UserList.jsp");
+		}
+    	
+    }
+    public void doGet(HttpServletRequest req,HttpServletResponse res) throws ServletException, IOException{
+    	String action = req.getParameter("action");
+    	//if(!(StringUtil.isEmpty(action)) && action.equalsIgnoreCase("edit")){
+    	if(action != null && !"".equalsIgnoreCase(action) && action.equalsIgnoreCase("edit")){
+			editUser(req,res);
+		}else {
+			BWAController bwac = BWAController.INSTANCE;
+			List<UserDetails> user_List = null;
+			user_List = bwac.listUserDetails();
+			if (user_List.isEmpty()) {
+				// need to handle the error condition
+
+			} else {
+				setDisplayList(req, res, user_List);
+			}
+			res.sendRedirect("jsp/UserList.jsp");
+		}
+    }
+    public void setDisplayList(HttpServletRequest req, HttpServletResponse res, List<UserDetails> user_List) {
+		PaginationUtil paginationUtil = new PaginationUtil(20,user_List.size());
+		paginationUtil.nextPage();
+		int toIndex = paginationUtil.getToIndex() > user_List.size()? user_List.size(): paginationUtil.getToIndex();
+		List<UserDetails> subList = user_List.subList(paginationUtil.getFromIndex(), toIndex);
+		List<UserDetails> listDisplayed = new ArrayList<UserDetails>();
+		for(UserDetails user: subList){
+			listDisplayed.add(user);
+		}
+		//List<UserDetails> listDisplayed = user_List;//user_List.subList(paginationUtil.getFromIndex(), toIndex);
+		
+		req.getSession().setAttribute("user_List_displayed", listDisplayed);
+		req.getSession().setAttribute("user_List", user_List);
+		req.getSession().setAttribute("paginationUtil", paginationUtil);
+	}
+    
+    public void setPagination(HttpServletRequest req, HttpServletResponse res){
+		String navigation = req.getParameter("action");
+		PaginationUtil paginationUtil = (PaginationUtil) req.getSession()
+				.getAttribute("paginationUtil");
+		List<UserDetails> user_List = null;
+		if (paginationUtil != null) {
+			if (navigation != null && navigation.equalsIgnoreCase("next")) {
+				paginationUtil.nextPage();
+			} else if (navigation != null
+					&& navigation.equalsIgnoreCase("previous")) {
+				paginationUtil.previousPage();
+			}
+			user_List = (List<UserDetails>) req.getSession()
+					.getAttribute("user_List");
+			int toIndex = paginationUtil.getToIndex() > user_List.size()? user_List.size(): paginationUtil.getToIndex();
+			List<UserDetails> subList = user_List.subList(paginationUtil.getFromIndex(), toIndex);
+			List<UserDetails> listDisplayed = new ArrayList<UserDetails>();
+			for(UserDetails user: subList){
+				listDisplayed.add(user);
+			}
+			//List<UserDetails> listDisplayed = user_List;//user_List.subList(paginationUtil.getFromIndex(), toIndex);
+			req.getSession().setAttribute("user_List_displayed", listDisplayed);
+			req.getSession().setAttribute("paginationUtil", paginationUtil);
+		}
+	}
+    
+    public void modifyUser(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException{
+    	String user_Id = req.getParameter("user_Id");
+    	String userRole = (String)req.getSession().getAttribute("userRole");
+		int strtIndex = user_Id.indexOf ("(");
+		strtIndex +=1;
+		int endIndex = user_Id.indexOf (")");
+		String tmp = user_Id.substring(strtIndex,endIndex);//UserDetails(7)
+		String first_name=req.getParameter("first_name");
+		String last_name=req.getParameter("last_name");
+		String login_id=req.getParameter("login_id");
+		String urole=req.getParameter("Acc_type");
+		String pswd1=req.getParameter("pswd1");
+		String location=req.getParameter("location");
+		String userStatus=req.getParameter("EUA");
+		if(userStatus == null){
+			userStatus = "unchecked";
+		}else
+		if(userStatus.equals("on"))
+		{
+			userStatus = "checked";
+		}
+		//userStatus="checked";
+		String lastloginDate="0000-00-00 00:00:00.000000";
+		BWAController.INSTANCE.modifyUserDetail(tmp,first_name,last_name,login_id,urole,pswd1,location,new Date(),lastloginDate,userStatus);
+		List<UserDetails> user_List = null;
+		//if(!(StringUtil.isEmpty(userRole)) && "Admin".equalsIgnoreCase(userRole)){
+		if(userRole != null && !"".equalsIgnoreCase(userRole) && "Admin".equalsIgnoreCase(userRole)){
+			 user_List = BWAController.INSTANCE.listUserDetails();
+			setDisplayList(req,res,user_List);
+			res.sendRedirect("jsp/UserList.jsp?modifyStatus=yes");
+		}else
+		{
+			user_Id = (String)req.getSession().getAttribute("logname");
+			user_List = BWAController.INSTANCE.userDetails(user_Id);
+			req.getSession().setAttribute("user", user_List.get(0));
+			res.sendRedirect("jsp/EditUser.jsp?modifyStatus=yes");
+		}
+    }
+    public void createUser(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException{
+    	String first_name=req.getParameter("first_name");
+		String last_name=req.getParameter("last_name");
+		String login_id=req.getParameter("login_id");
+		String urole="User";
+		String pswd1=req.getParameter("pswd1");
+		String location=req.getParameter("location");
+		String lastLoginDate="0000-00-00 00:00:00.000000";
+		String userStatus="unchecked";
+		List<UserDetails> user_List = BWAController.INSTANCE.userDetails(login_id);
+		if(user_List != null && !(user_List.isEmpty())){
+			res.sendRedirect("jsp/NewUserReg.jsp?insertStatus=NO&user_id="+login_id);
+		}else{
+			BWAController.INSTANCE.add(first_name,last_name,login_id,urole,pswd1,location,new Date(),lastLoginDate,userStatus);
+			res.sendRedirect("jsp/NewUserReg.jsp?insertStatus=yes");
+		}
+    }
+
+	public void editUser(HttpServletRequest req, HttpServletResponse res)
+			throws ServletException, IOException {
+		String user_Id = "";
+		String userRole = (String)req.getSession().getAttribute("userRole");
+		List<UserDetails> user_List = null;
+		//if(!(StringUtil.isEmpty(userRole)) && "Admin".equalsIgnoreCase(userRole)){
+		if(userRole != null && !"".equalsIgnoreCase(userRole) && "Admin".equalsIgnoreCase(userRole)){
+			user_Id = req.getParameter("user_Id");
+			user_List = BWAController.INSTANCE.getUserDetail(user_Id);
+		}else{
+			user_Id = (String)req.getSession().getAttribute("logname");
+			user_List = BWAController.INSTANCE.userDetails(user_Id);
+		}
+		System.out.println("user_Id in user Servlet:" + user_Id);
+		
+		if (!(user_List.isEmpty())) {
+			req.getSession().setAttribute("user", user_List.get(0));
+		}
+		res.sendRedirect("jsp/EditUser.jsp");
+	}
+ }

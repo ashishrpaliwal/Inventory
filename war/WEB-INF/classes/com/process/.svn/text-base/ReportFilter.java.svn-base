@@ -1,0 +1,57 @@
+package com.sony.process;
+
+import java.io.IOException;
+import java.util.Date;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class ReportFilter implements Filter {
+	public void doFilter(ServletRequest request,
+	ServletResponse response,
+	FilterChain chain)
+	throws ServletException, IOException {
+	HttpServletRequest req = (HttpServletRequest)request;
+	HttpServletResponse res = (HttpServletResponse) response; 
+	/*System.out.println(req.getRemoteHost() +
+	" tried to access " +
+	req.getRequestURL() +
+	" on " + new Date() + ".");*/
+	String uri = req.getRequestURI();
+	String session_value = (String)req.getSession().getAttribute("flag");
+	if(session_value == null)
+	{
+		RequestDispatcher dispatcher = req.getRequestDispatcher("/jsp/login.jsp");
+		if("/jsp/ViewLog.jsp".equalsIgnoreCase(uri) || "/viewLogs".equalsIgnoreCase(uri)){
+			  String queryString = req.getQueryString();
+			  req.setAttribute("redirectURL", "/viewLogs?"+queryString);
+		}else if("/jsp/LogList.jsp".equalsIgnoreCase(uri)){
+			req.setAttribute("redirectURL", "/searchLogs");
+		}
+		else{
+			req.setAttribute("redirectURL", "/jsp/welcome.jsp");
+		}
+		dispatcher.forward(req, res);
+	}else{
+		if("/jsp/LogList.jsp".equalsIgnoreCase(uri)){
+			//RequestDispatcher dispatcher = req.getRequestDispatcher("/searchLogs");
+			//dispatcher.forward(req, res);
+		}else{
+			/*RequestDispatcher dispatcher = req.getRequestDispatcher("/jsp/welcome.jsp");
+			dispatcher.forward(req, res);*/
+		}
+	}
+	chain.doFilter(request,response);
+	}
+	public void init(FilterConfig config)
+	throws ServletException {
+	}
+	public void destroy() {}
+	}

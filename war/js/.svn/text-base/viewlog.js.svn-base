@@ -1,0 +1,642 @@
+var called = true;
+var zoomValues = new Array(0,1,10,120);
+    var zoomDisplayValues = new Array("0","60sec/page","10min/page","30min/page");
+    //google.load('visualization', '1', {packages: ['corechart']});
+    google.load('visualization', '1', {packages: ['annotatedtimeline']});
+    
+    function addingRowsToDataTableInGraph_1(graphsValues,dsum) {
+    	var BwChecked = document.getElementById("BW").checked;
+    	var SMAChecked = document.getElementById("SMA").checked;
+    	var SDChecked = document.getElementById("SD").checked;
+    	var data = new google.visualization.DataTable();
+    	 data.addColumn('datetime', 'Date'); //0
+    	 if(SMAChecked){
+    		 data.addColumn('number', 'SMA'); //1
+    	 }
+    	 if(SDChecked){
+    		 data.addColumn('number', 'SD'); //1 
+    	 }
+    	 if(BwChecked){
+    		 data.addColumn('number', 'App');//4
+    	 }
+    	 
+         var duration_sum = dsum;
+    	 var appTmp = 0.0;
+    	 var app_sum = 0.0;
+    	 var app_sam_div = 0;
+    	 var app_sqrt = 0.0;
+    	 var timeFormat="";
+		 timeFormat=document.ViewLog.timeFormat.value;
+		 var palyBackDate = document.getElementById("palyBackDate").value;
+		 var date1;
+		 try{
+			 //palyBackDate = palyBackDate.substring(0,10);
+			 date1 = new Date(palyBackDate);
+		 }catch(err){
+			 date1 = new Date(palyBackDate);
+		 }
+		 var date = new Date();
+		 date.setYear(date1.getYear());
+		 date.setMonth(date1.getMonth());
+		 date.setDate(date1.getDate());
+		 //date.setHours(date1.getHours());
+		 //date.setMinutes(date1.getMinutes());
+    	 //date.setSeconds(date1.getSeconds());
+    	date.setHours(0);
+		date.setMinutes(0);
+    	date.setSeconds(0);
+		date.setSeconds(0);
+    	date.setMilliseconds(0);
+    	var datestr = "";
+    	if(graphsValues != ""){
+    	var arr = graphsValues.split("-");
+    	var len = arr.length;
+    	if(BwChecked && SMAChecked && SDChecked){
+    		data.addRow([ new Date(date),0,0,0]);
+    	}else if(BwChecked && SMAChecked){
+    		data.addRow([ new Date(date),0,0]);
+    	}else if(BwChecked && SDChecked){
+    		data.addRow([ new Date(date),0,0]);
+    	}else if(BwChecked){
+    		data.addRow([ new Date(date),0]);
+    	}
+    	for ( var i = 0; i < len; i++) {
+    		var string = arr[i];//document.ViewLog.app[i].value;
+    		var arrValues = string.split(";");
+    		/*if(arrValues.length == 3){
+    			duration_sum = (parseInt(arrValues[2]));
+    		}*/
+    		if(arrValues.length == 4){
+    			duration_sum=0;
+    			duration_sum = (parseInt(arrValues[2]));
+    			//alert("duration_sum_1="+duration_sum);
+    		}
+    		duration_sum += (parseInt(arrValues[0]));// ((document.ViewLog.app_dur[i].value/1000));
+    		//alert("duration_sum_1="+duration_sum);
+    		appTmp = parseInt(arrValues[1]);
+    		app_sum += (appTmp * appTmp);
+    		var duration_sum_str = "" + duration_sum;
+    		//date.setTime(date.getTime() + duration_sum);
+    		date.setTime(date.getTime() + parseInt(arrValues[0]));
+        	//data.addRow( [ new Date(date), app_sum, 0 ]);
+        	//alert('date:' + date.getHours());
+    		//date.setSeconds(date.getSeconds() + duration_sum);//duration_sum  need to be passed from the actual page starts.
+    		var offsetHours = date.getTimezoneOffset();
+        	var offsetMillisec = offsetHours * 60  * 1000;
+        	//date.setTime(date.getTime() + offsetMillisec);
+    		var scaleInNUM = 1;//document.getElementById("scale_hidden").value;
+    		if(scaleInNUM*1 == 3 ){
+    			if ((i + 1) % 3 == 0) {
+    				app_sam_div = (app_sum / 3);
+    				app_sqrt = Math.sqrt(app_sam_div);
+    				data.addRow( [ new Date(date), app_sqrt, 0 ]);
+    				app_sum = 0.0;
+    			}
+    		}else {
+    			
+    			var smasum = 0;
+    			var sdsum = 0;
+    			var bitratesum = 0;
+    			var count = 0;
+    			for(var j = i; j >=0;j--){
+    				var string1 = arr[j];//document.ViewLog.app[i].value;
+    				var arrValues1 = string1.split(";");
+    	    		var appTmp1 = parseInt(arrValues1[1]);
+    				smasum += parseInt(arrValues1[0]);
+    				bitratesum += appTmp1;
+    				count = count + 1;
+    				if(smasum >= 10000){
+    					break;
+    				}
+    			}
+    			bitratesum = bitratesum/count;
+    			smasum = 0;
+    			count=0;
+    			for(var j = i; j >=0;j--){
+    				var string1 = arr[j];//document.ViewLog.app[i].value;
+    				var arrValues1 = string1.split(";");
+    	    		var appTmp1 = parseInt(arrValues1[1]);
+    	    		smasum += parseInt(arrValues1[0]);
+    	    		//Math.sqrt(app_sam_div);
+    				sdsum += (bitratesum - appTmp1)* (bitratesum - appTmp1);
+    				//alert('bitratesum:' + bitratesum +":--" +appTmp1 + ":appTmp1");
+    				count = count + 1; 
+    				if(smasum >= 10000){
+    					break;
+    				}
+    			}
+    			sdsum = sdsum/count;
+    			sdsum = Math.sqrt(sdsum);
+    			if(BwChecked && SMAChecked && SDChecked){
+    				//data.addRow([new Date(date),SMA,SD,Bitrate]);
+    				data.addRow([new Date(date),bitratesum/1000,sdsum/1000,appTmp/1000]);
+    				//data.addRow([new Date(date),appTmp/1000,bitratesum/1000,sdsum/1000]);
+    	    	}else if(BwChecked && SMAChecked){
+    	    		//data.addRow([new Date(date),SMA,Bitrate]);
+    	    		data.addRow([new Date(date),bitratesum/1000,appTmp/1000]);
+    	    		//data.addRow([new Date(date),appTmp/1000,bitratesum/1000]);
+    	    	}else if(BwChecked && SDChecked){
+    	    		//data.addRow([new Date(date),SD,Bitrate]);
+    	    		data.addRow([new Date(date),sdsum/1000,appTmp/1000]);
+    	    		//data.addRow([new Date(date),appTmp/1000,sdsum/1000]);
+    	    	}else if(BwChecked){
+    	    		//data.addRow([new Date(date),Bitrate]);
+    	    		data.addRow([new Date(date),appTmp/1000]);
+    	    	}
+    		}
+    	}
+    	}
+    	//if(data.getNumberOfRows() !=0 ){
+    		
+    		var annotatedtimeline = new google.visualization.AnnotatedTimeLine(
+          	      document.getElementById('visualization'));
+    		if(BwChecked && SMAChecked && SDChecked){
+    			  annotatedtimeline.draw(data, {
+            	                                'allValuesSuffix': ' Mbps', // A suffix that is added to all values
+            	                                //'colors': ['blue','red','green'], // [Red - SMA,Blue - SD,Green - Bitrate(BW)]
+            	                                //'colors': ['green','red','blue'],
+            	                                'colors': ['red','blue','green'],
+            	                                'displayAnnotations': false,
+            	                                //'title': 'Bandwidth Performance Graph',
+            	                                'dateFormat':'HH:mm:ss',
+            	                                'allowRedraw':true,
+            	                                'displayDateBarSeparator':true,
+            	                                'displayExactValues': true, // Do not truncate values (i.e. using K suffix)
+            	                                'displayRangeSelector' : true, // show the range selector
+            	                                'displayZoomButtons': false, // DO not display the zoom buttons
+            	                                //'displayZoomButtons': true,
+            	                                //'displayLegendDots' : true,
+            	                                'fill': 0, // Fill the area below the lines with 20% opacity
+            	                                'legendPosition': 'sameRow', // Can be sameRow
+            	                                //'max': 24, // Override the automatic default
+            	                                //'min':  0, // Override the automatic default
+            	                                //'scaleColumns': [0,1,2], // Have two scales, by the first and second lines
+            	                                'scaleType': 'allmaximised', // See docs...
+            	                                'thickness': 1 // Make the lines thicker
+            	                               // 'zoomStartTime': new Date(), //NOTE: month 1 = Feb (javascript to blame)
+            	                               //'zoomEndTime': new Date() //NOTE: month 1 = Feb (javascript to blame)
+            	  								});
+            	                               //}, {'displayAnnotations': true,dateFormat:'HH:mm:ss:SSS'});
+      		
+
+      	//}
+	    	}else if(BwChecked && SMAChecked){
+	    		//annotatedtimeline.setVisibleChartRange(new Date("Tue 22 Feb 2011 06:26:10"),new Date("Tue 23 Feb 2011 06:26:10"));
+	          	  annotatedtimeline.draw(data, {
+	          	                                'allValuesSuffix': ' Mbps', // A suffix that is added to all values
+	          	                                //'colors': ['green','red'], // [Red - SMA,Blue - SD,Green - Bitrate(BW)]
+	          	                                'colors': ['red','green'],
+	          	                                'displayAnnotations': false,
+	          	                                //'title': 'Bandwidth Performance Graph',
+	          	                                'dateFormat':'HH:mm:ss',
+	          	                                'allowRedraw':true,
+	          	                                'displayDateBarSeparator':true,
+	          	                                'displayExactValues': true, // Do not truncate values (i.e. using K suffix)
+	          	                                'displayRangeSelector' : true, // show the range selector
+	          	                                'displayZoomButtons': false, // DO not display the zoom buttons
+	          	                                //'displayLegendDots' : true,
+	          	                                //'displayZoomButtons': true,
+	          	                                'fill': 0, // Fill the area below the lines with 20% opacity
+	          	                                'legendPosition': 'sameRow', // Can be sameRow
+	          	                                //'max': 24, // Override the automatic default
+	          	                                //'min':  0, // Override the automatic default
+	          	                                //'scaleColumns': [0,1], // Have two scales, by the first and second lines
+	          	                                'scaleType': 'allmaximised', // See docs...
+	          	                                'thickness': 1 // Make the lines thicker
+	          	                               // 'zoomStartTime': new Date(), //NOTE: month 1 = Feb (javascript to blame)
+	          	                               //'zoomEndTime': new Date() //NOTE: month 1 = Feb (javascript to blame)
+	          	  								});
+	          	                               //}, {'displayAnnotations': true,dateFormat:'HH:mm:ss:SSS'});
+	    		
+
+	    	//}
+	    	}else if(BwChecked && SDChecked){
+	    		//annotatedtimeline.setVisibleChartRange(new Date("Tue 22 Feb 2011 06:26:10"),new Date("Tue 23 Feb 2011 06:26:10"));
+	          	  annotatedtimeline.draw(data, {
+	          	                                'allValuesSuffix': ' Mbps', // A suffix that is added to all values
+	          	                                //'colors': ['green','blue'], // [Red - SMA,Blue - SD,Green - Bitrate(BW)]
+	          	                                'colors': ['blue','green'],
+	          	                                'displayAnnotations': false,
+	          	                                //'title': 'Bandwidth Performance Graph',
+	          	                                'dateFormat':'HH:mm:ss',
+	          	                                'allowRedraw':true,
+	          	                                'displayDateBarSeparator':true,
+	          	                                'displayExactValues': true, // Do not truncate values (i.e. using K suffix)
+	          	                                'displayRangeSelector' : true, // show the range selector
+	          	                                'displayZoomButtons': false, // DO not display the zoom buttons
+	          	                                //'displayZoomButtons': true,
+	          	                                //'displayLegendDots' : true,
+	          	                                'fill': 0, // Fill the area below the lines with 20% opacity
+	          	                                'legendPosition': 'sameRow', // Can be sameRow
+	          	                                //'max': 24, // Override the automatic default
+	          	                                //'min':  0, // Override the automatic default
+	          	                                //'scaleColumns': [0,1], // Have two scales, by the first and second lines
+	          	                                'scaleType': 'allmaximised', // See docs...
+	          	                                'thickness': 1 // Make the lines thicker
+	          	                               // 'zoomStartTime': new Date(), //NOTE: month 1 = Feb (javascript to blame)
+	          	                               //'zoomEndTime': new Date() //NOTE: month 1 = Feb (javascript to blame)
+	          	  								});
+	          	                               //}, {'displayAnnotations': true,dateFormat:'HH:mm:ss:SSS'});
+	    		
+
+	    	//}
+	    	}else if(BwChecked){
+	    		//annotatedtimeline.setVisibleChartRange(new Date("Tue 22 Feb 2011 06:26:10"),new Date("Tue 23 Feb 2011 06:26:10"));
+	          	  annotatedtimeline.draw(data, {
+	          	                                'allValuesSuffix': ' Mbps', // A suffix that is added to all values
+	          	                                'colors': ['green'], // [Red - SMA,Blue - SD,Green - Bitrate(BW)]
+	          	                                'displayAnnotations': false,
+	          	                                //'title': 'Bandwidth Performance Graph',
+	          	                                'dateFormat':'HH:mm:ss',
+	          	                                'allowRedraw':true,
+	          	                                'displayDateBarSeparator':true,
+	          	                                'displayExactValues': true, // Do not truncate values (i.e. using K suffix)
+	          	                                'displayRangeSelector' : true, // show the range selector
+	          	                                'displayZoomButtons': false, // DO not display the zoom buttons
+	          	                                //'displayLegendDots' : true,
+	          	                                //'displayZoomButtons': true,
+	          	                                'fill': 0, // Fill the area below the lines with 20% opacity
+	          	                                'legendPosition': 'sameRow', // Can be sameRow
+	          	                                //'max': 24, // Override the automatic default
+	          	                                //'min':  0, // Override the automatic default
+	          	                                //'scaleColumns': [0], // Have two scales, by the first and second lines
+	          	                                'scaleType': 'allmaximised', // See docs...
+	          	                                'thickness': 1 // Make the lines thicker
+	          	                               // 'zoomStartTime': new Date(), //NOTE: month 1 = Feb (javascript to blame)
+	          	                               //'zoomEndTime': new Date() //NOTE: month 1 = Feb (javascript to blame)
+	          	  								});
+	          	                               //}, {'displayAnnotations': true,dateFormat:'HH:mm:ss:SSS'});
+	    		
+
+	    	//}
+	    	}
+    	
+    }   
+    
+    function test(){
+    	 var appvalue = document.ViewLog.apps.value;
+    	 var playBaclDuration = document.getElementById("playbackDuration");
+    	 var currentPage = document.getElementById("currentPage");
+    	 //currentPage.value = 1;
+    	 var playBackDurationInMilliSec = playBaclDuration.value;
+    	 var scaleInNUM = document.getElementById("scale_hidden").value;//this is by default 30 minutes on initial load...//
+    	 var scaleinMin = zoomValues[scaleInNUM*1];
+    	 
+    	 var totalNumberofPage = 0;
+    	 var scale = 60000 * scaleinMin;
+    	 var totalPage = 0;
+    	 if(playBackDurationInMilliSec % scale == 0){
+    		 totalPage = Math.floor(playBackDurationInMilliSec / scale);
+    	 }else{
+    		totalPage = Math.floor(playBackDurationInMilliSec / scale) + 1;
+    	 }
+    	 
+    	 var currentpagevalue = ((currentPage.value*1) - 1);
+    	 var graphsValues = "";
+    	 
+    	 //get the values for the current page
+    	 var apps_arr = appvalue.split("Spliter");
+    	 
+    	 var startingIndex = (scaleinMin * currentpagevalue);
+    	 var endIndex = scaleinMin * currentPage.value;
+    	 
+    	 var durationSum = currentpagevalue * (scaleinMin * 60 *1000);
+    	 //alert('startingIndex' + startingIndex);
+    	 //alert('endIndex' + endIndex);
+    	 //alert('apps_arr.length' + apps_arr.length);
+    	 if((currentPage.value*1) == 1){
+    		 //document.getElementById("Prev").disabled = true;
+    	 }else{
+    		 //document.getElementById("Prev").disabled = false;
+    	 }
+    	 if((currentPage.value*1) >= totalPage){
+    		 //document.getElementById("Next").disabled = true;
+    	 }else{
+    		 //document.getElementById("Next").disabled = false;
+    	 }
+    	 
+    	 if((scaleInNUM*1) == 1){
+    		// document.getElementById("ZoomIn").disabled = true;
+    	 }else{
+    		// document.getElementById("ZoomIn").disabled = false;
+    	 }
+    	 if((scaleInNUM*1) >= 3){
+    		 //document.getElementById("ZoomOut").disabled = true;
+    	 }else{
+    		 //document.getElementById("ZoomOut").disabled = false;
+    	 }
+    	 
+    	// var pageNo = document.getElementById("pageNo")
+    	 //pageNo.value =  currentPage.value + "/" + totalPage;
+    	 /*for(var i = startingIndex ; (i < endIndex && i < apps_arr.length) ; i++){
+    		 graphsValues += apps_arr[i];
+    	 }*/
+    	 for(var i = startingIndex ; (i < apps_arr.length) ; i++){
+    		 graphsValues += apps_arr[i];
+    	 }
+    	 //addingRowsToDataTableInGraph(graphsValues,durationSum);
+    	 addingRowsToDataTableInGraph_1(graphsValues,durationSum);
+    	 //var stratScale = document.getElementById("start");
+    	 //stratScale.value =  timeFormatter(durationSum);
+    	 //var divId = document.getElementById("actualValues");
+    	 //divId.innerHTML = graphsValues; 
+    	 //test2();
+    	 var sockvalue1 = document.ViewLog.sock.value;
+    	 if(sockvalue1 == ''){
+    	 	document.getElementById("Sock").disabled = true;
+    	 }
+    	 else{
+     	 	document.getElementById("Sock").disabled = false;
+     	 }
+    }
+    
+    function test2(){
+   	 var sockvalue = document.ViewLog.sock.value;
+   	 var graphsValues1 = "";
+   	 //get the values for the current page
+   	 var sock_arr = sockvalue.split("Spliter");
+   	 var durationSum = 0;
+   	 for(var i = 0 ; (i < sock_arr.length) ; i++){
+   		 graphsValues1 += sock_arr[i];
+   	 }
+   	 addingRowsToDataTableInGraph_2(graphsValues1,durationSum);
+   }
+     
+    function nextPage(index){
+    	index = (index*1 + 1);
+    	//alert("next" + index);
+    	
+    	//alert(headerId);
+    	document.ViewLog.method="POST";
+    	document.ViewLog.action="/viewLogs?index="+index;
+    	
+    	document.ViewLog.submit();
+		
+	}
+    
+    function backPage(){
+    	document.ViewLog.method="POST";
+    	//document.ViewLog.action="/viewLogs?action=back";
+    	document.ViewLog.action="/searchLogs?action=" + "back";
+    	document.ViewLog.submit();
+	}
+    
+    function prevPage(index){
+    	index = (index*1 - 1);
+    	alert('index in previous:' + index);
+    	//alert("previous" + index);
+    	document.ViewLog.method="POST";
+    	document.ViewLog.action="/viewLogs?index="+index;
+    	document.ViewLog.submit();
+	}
+    
+    function jumpToLog(totalLogNo,currentLogNo)
+    {
+    	var validLogNo=/^[0-9]+$/;
+    	var logNo=prompt("Please enter the S.No of log:(1-"+totalLogNo+")",currentLogNo-1);
+    	if(logNo.search(validLogNo)==-1)
+    	{
+    		alert("Please enter valid S.No of log.");
+    	}
+    	else
+    	{
+    		if (logNo=="0" || logNo>totalLogNo)
+    		{
+    		  alert("Please enter valid S.No of log.");
+    	    }
+    		else
+    		{
+    			document.ViewLog.method="POST";
+    			document.ViewLog.action="/viewLogs?index="+(logNo);
+    			document.ViewLog.submit();
+    		}
+    	}
+    	return false;
+    	
+    }
+    
+    function makeValidInValid(headerId,validOrInvalid){
+    	headerIdG = headerId;
+    	var toggle = (validOrInvalid == "Valid" || validOrInvalid == "TRUE")?"Invalid":"Valid";
+    	var warningMessage = "Are you sure to make this log " + toggle + "?";
+    	var flag = confirm(warningMessage)
+    	if (flag==true)
+    	  {
+    		makeValidInValidAjaxCall(headerId,validOrInvalid);
+    	  }
+    }
+
+    function makeValidInValidAjaxCall(headerId,validOrInvalid) {
+    	
+    	   //var url = "/jsonServlet3";
+    	  //alert(validOrInvalid);
+    	   var url = "/validate?header_id=" + headerId + "&flag=" + validOrInvalid;
+    	   if (typeof XMLHttpRequest != "undefined") {
+    	       req = new XMLHttpRequest();
+    	   } else if (window.ActiveXObject) {
+    	       req = new ActiveXObject("Microsoft.XMLHTTP");
+    	   }
+    	   req.open("POST", url, true);
+    	   req.onreadystatechange = callback;
+    	   req.send(null);
+    	}
+
+    
+    function timeFormatter(millisec) {
+    	var date = new Date();
+    	date.setTime(0);
+    	date.setTime(millisec);
+    	var offsetHours = date.getTimezoneOffset();
+    	var offsetMillisec = offsetHours * 60  * 1000;
+    	date.setTime(date.getTime() + offsetMillisec);
+    	/*var hours = Math.floor(((millisec/(1000*60))/60));
+    	var minutes = Math.floor((millisec/(1000*60)));
+    	var seconds = Math.floor(((millisec%(1000*60))/1000));
+    	var milliSec = ((millisec%(1000*60)))%1000;*/
+    	
+    	var timeStr = check_Min_Sec_Hours(date.getHours())+ ":" + check_Min_Sec_Hours(date.getMinutes())+ ":" + check_Min_Sec_Hours(date.getSeconds())+ ":" + checkTimeMsec(date.getMilliseconds());
+    	return timeStr;
+    }
+    
+    function checkTimeMsec(i) {
+		if (i < 100 && i > 10) {
+			i = "0" + i;
+		} else if (i < 10) {
+			i = "00" + i;
+		}
+		return i;
+    }
+    
+    function check_Min_Sec_Hours(i) {
+    	if (i < 10) {
+		  i = "0" + i;
+		} 
+		return i;
+    }
+    
+      function drawVisualization() {
+		var scale = "";
+		scale = document.ViewLog.scale.value;
+		var app_size = document.ViewLog.app.length;
+		if (scale == 'ALL') {
+			addingRowsToDataTableInGraph(app_size);
+		}
+      }
+
+      //google.setOnLoadCallback(drawVisualization);
+      google.setOnLoadCallback(test);
+	  
+      function showFile(header_id)
+	  {	
+		document.ViewLog.method="POST";
+		window.open("./ShowFile.jsp?header_id="+header_id,"",'toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width=1024,height=600');	
+	  }
+     
+      
+    function zoomIn() {
+      
+      var scaleinMin = document.getElementById("scale_hidden");
+      scaleinMin.value = (scaleinMin.value*1) - 1;
+      var scale = document.getElementById("scale");
+      scale.value = zoomDisplayValues[scaleinMin.value];
+      var currentPage = document.getElementById("currentPage");
+	  currentPage.value = 1;
+	  test();
+   }
+
+    function zoomOut() {
+    	var scaleinMin = document.getElementById("scale_hidden");
+        scaleinMin.value = (scaleinMin.value*1) + 1;
+        var scale = document.getElementById("scale");
+        scale.value = zoomDisplayValues[scaleinMin.value];
+        var currentPage = document.getElementById("currentPage");
+        currentPage.value = 1;
+  	  	test();
+      }
+    function setScaleValues(sdisplay,svalue) {
+    	var display_s = document.getElementById("scale");
+    	var value_s = document.getElementById("scale_hidden");
+    	display_s.value = sdisplay;
+    	value_s.value = svalue;
+    }
+    function redraw(){
+    	test();
+    }
+    function redraw1(){
+    	var sockChecked = document.getElementById("Sock").checked;
+    	if(sockChecked){
+    		document.getElementById("visualization2").style.display='block';
+    		if(called){
+    			test2();
+    			called = false;
+    		}
+    	}else{
+    		document.getElementById("visualization2").style.display='none';
+    		
+    	}
+    	
+    }
+    
+    function addingRowsToDataTableInGraph_2(graphsValues,dsum) {
+    	//graphsValues = "1000;500-2000;400-8000;150-10000;100-9000;130-7000;110-5000;120-1000;500";
+    	var data = new google.visualization.DataTable();
+    	 data.addColumn('datetime', 'Date'); //0
+         data.addColumn('number', 'Sock');//4
+         var duration_sum = dsum;
+    	 var appTmp = 0.0;
+    	 var app_sum = 0.0;
+		 var palyBackDate = document.getElementById("palyBackDate").value;
+		 var date1;
+		 try{
+			 //palyBackDate = palyBackDate.substring(0,10);
+			 date1 = new Date(palyBackDate);
+		 }catch(err){
+			 date1 = new Date(palyBackDate);
+		 }
+		 var date = new Date();
+		 date.setYear(date1.getYear());
+		 date.setMonth(date1.getMonth());
+		 date.setDate(date1.getDate());
+
+    	date.setHours(0);
+		date.setMinutes(0);
+    	date.setSeconds(0);
+		date.setSeconds(0);
+    	date.setMilliseconds(0);
+    	var datestr = "";
+    	if(graphsValues != ""){
+    	var arr = graphsValues.split("-");
+    	var len = arr.length;
+    	data.addRow([ new Date(date),0]);
+    	for ( var i = 0; i < len; i++) {
+    		var string = arr[i];//document.ViewLog.app[i].value;
+    		var arrValues = string.split(";");
+    		/*if(arrValues.length == 3){
+    			duration_sum = (parseInt(arrValues[2]));
+    		}*/
+    		if(arrValues.length == 4){
+    			duration_sum=0;
+    			duration_sum = (parseInt(arrValues[2]));
+    			//alert("duration_sum_2="+duration_sum);
+    		}
+    		duration_sum += (parseInt(arrValues[0]));// ((document.ViewLog.app_dur[i].value/1000));
+    		//("duration_sum_1="+duration_sum +"   parseInt(arrValues[0])="+parseInt(arrValues[0]));
+    		appTmp = parseInt(arrValues[1]);
+    		app_sum += (appTmp * appTmp);
+    		var duration_sum_str = "" + duration_sum;
+    		//date.setTime(date.getTime() + duration_sum);
+    		date.setTime(date.getTime() + parseInt(arrValues[0]));
+    		
+       	//data.addRow( [ new Date(date), app_sum, 0 ]);
+        	//alert('date:' + date.getHours());
+    		//date.setSeconds(date.getSeconds() + duration_sum);//duration_sum  need to be passed from the actual page starts.
+    		var offsetHours = date.getTimezoneOffset();
+        	var offsetMillisec = offsetHours * 60  * 1000;
+        	//date.setTime(date.getTime() + offsetMillisec);
+    		var scaleInNUM = 1;//document.getElementById("scale_hidden").value;
+    		if(scaleInNUM*1 == 3 ){
+    			if ((i + 1) % 3 == 0) {
+    				app_sam_div = (app_sum / 3);
+    				app_sqrt = Math.sqrt(app_sam_div);
+    				data.addRow( [ new Date(date), app_sqrt, 0 ]);
+    				app_sum = 0.0;
+    			}
+    		}else {
+    			data.addRow([new Date(date),appTmp/1000]);
+   			
+    		}
+    	}
+    	}
+    	//if(data.getNumberOfRows() !=0 ){
+    		
+    		var annotatedtimeline = new google.visualization.AnnotatedTimeLine(
+          	      document.getElementById('visualization2'));
+    		//annotatedtimeline.setVisibleChartRange(new Date("Tue 22 Feb 2011 06:26:10"),new Date("Tue 23 Feb 2011 06:26:10"));
+          	  annotatedtimeline.draw(data, {
+          	                                'allValuesSuffix': ' Mbps', // A suffix that is added to all values
+          	                                'colors': ['green'], // The colors to be used
+          	                                'displayAnnotations': false,
+          	                                //'title': 'Bandwidth Performance Graph',
+          	                                'dateFormat':'HH:mm:ss',
+          	                                'allowRedraw':true,
+          	                                'displayDateBarSeparator':true,
+          	                                'displayExactValues': true, // Do not truncate values (i.e. using K suffix)
+          	                                'displayRangeSelector' : true, // show the range selector
+          	                                'displayZoomButtons': false, // DO not display the zoom buttons
+          	                                //'displayZoomButtons': true,
+          	                                'fill': 0, // Fill the area below the lines with 20% opacity
+          	                                'legendPosition': 'sameRow', // Can be sameRow
+          	                                //'max': 24, // Override the automatic default
+          	                                //'min':  0, // Override the automatic default
+          	                                'scaleColumns': [0,1], // Have two scales, by the first and second lines
+          	                                'scaleType': 'allfixed', // See docs...
+          	                                'thickness': 1 // Make the lines thicker
+          	                               // 'zoomStartTime': new Date(), //NOTE: month 1 = Feb (javascript to blame)
+          	                               //'zoomEndTime': new Date() //NOTE: month 1 = Feb (javascript to blame)
+          	  								});
+          	                               //}, {'displayAnnotations': true,dateFormat:'HH:mm:ss:SSS'});
+    		
+
+    	//}
+    	
+    }  

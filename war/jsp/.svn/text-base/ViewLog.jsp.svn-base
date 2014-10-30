@@ -1,0 +1,287 @@
+<%-- 
+  - Author(s): Susheel Kumar
+  - Date: December 2010
+  - Copyright Notice: Copyright © 2011 Sony Corporation.
+  - Description: View Log Detail Page
+--%>
+
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jstl/fmt_rt" prefix="fmt"%>
+<%@ taglib  uri="customTags"  prefix="time" %>
+<html>
+<head>
+<meta name="robots" content="noindex,nofollow">
+<title>View Log Page</title>
+</head>
+<%@page import="java.text.*,java.io.*,java.util.*"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="com.sony.model.HeaderInfo" %>
+<%@page import="com.sony.model.LogFile" %>
+<%@page import="com.sony.constant.BWAController" %>
+<%@page import="com.sony.bean.SearchCretria" %>
+<link rel="stylesheet" href="css/footer.css" />
+<link rel="stylesheet" href="css/popupDiv.css" />
+<script type="text/javascript" src="../js/visualization.js"></script>
+<script type="text/javascript" src="../js/viewlog.js"></script>
+<script type="text/javascript" src="../js/popupDiv.js"></script>
+<jsp:include page="session.jsp"/>
+<style>
+.overlay
+{
+    position: absolute;
+    top: 0;
+    left:0;
+	width: 100%;
+	height: 100%;
+    background: #000;
+    display: none;   
+    opacity: .5;
+    filter: alpha(opacity=50);
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+	
+}
+.popup
+{
+    position: absolute;
+	border: 5px solid skyblue;
+	padding: 10px;
+	background-color: #ccc;
+    top: 25%;
+    left: 45%;
+    margin-left: -150px;
+    margin-top: -100px;
+    width: 400px;
+    height: 240px;
+    display: none;
+    background: white;
+}
+</style>
+<body style="background-image:url(images/bg7.jpg); background-repeat:repeat; background-position: 10% 10%; width:auto; height:auto">
+<%
+String s = request.getParameter("header_id");
+System.out.println("headerId:in jsp:" + s);
+HeaderInfo headerInfo = (HeaderInfo)request.getSession().getAttribute("headerDetail");
+if(headerInfo != null){
+	String sheaderid= headerInfo.getHeader_Id().toString();
+	
+	if(!sheaderid.equalsIgnoreCase(s)){
+		System.out.println("Redirection1:" + s);
+		response.sendRedirect("/viewLogs?header_id=" + s);
+	}else{
+		SearchCretria s1 = (SearchCretria)request.getSession().getAttribute("searchCretria");
+		if(!headerInfo.getValidity().equalsIgnoreCase(s1.getValidity())){
+			System.out.println("Redirction2:" + s);
+			//response.sendRedirect("/viewLogs?header_id=" + s);
+		}
+	}
+}else if(headerInfo == null){
+	response.sendRedirect("/viewLogs?header_id=" + s);
+}
+%>
+
+<form name="ViewLog" method="post">
+<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">  <!--holder start-->
+		<tr width="100%">
+			<td>
+				<c:choose>
+					<c:when test="${userRole == 'Admin'}">
+						<jsp:include page="Header.jsp"/>
+					</c:when>
+					<c:otherwise>
+						<jsp:include page="UserHeader.jsp"/>
+					</c:otherwise>  
+				</c:choose>
+				</td>
+		</tr>
+		<tr>
+			<td align="center">
+					
+					<table width="50%" border="0" align="center">
+					  	<tr>
+							<td width="100%" height="43" colspan="2" align="center">
+							  <B><h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bandwidth Log Detail Page</h4></B>
+							 </td>
+						</tr>
+						<!--<tr>
+							<td width="100%" height="43" colspan="2" align="center">
+							 <input type="button" style="background:#003366; border-color:#003366; color:#ffffff;" name="Back" value="Back to Log List Page" onclick="history.back(-2)"/>
+							 </td>
+						</tr>
+					--></table>
+					<c:if test="${headerDetail == null}">
+						 	<tr align="center">
+						 		<td colspan="11">
+									<b>Header Details are not available/selected</b>
+						 		</td>
+						 	</tr>
+					</c:if>
+					<c:if test="${headerDetail != null}"> 
+					<input type="hidden" readonly="true" size="1" style="background:#003366; border-color:#003366; color:#ffffff;" name="currentPosition" value="<c:out value="${(index)}"/>"/> 
+					<table width="80%" border="1" align="center" bordercolor="#999999" cellspacing="0" class="tablefont">
+									<th align="center" bgcolor="#0099FF">&nbsp;S.No</th>
+								    <th align="center" bgcolor="#0099FF">&nbsp;Header Id</th>
+								 	<th align="center" bgcolor="#0099FF">&nbsp;Validity</th>
+								  	<th align="center" bgcolor="#0099FF">&nbsp;Logged Date/Time</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Client IP Address</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Client Id</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Loc</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Internet Access</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Interface Name</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Test Content</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Playback Date/Time</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Playback Duration<br>[HH:mm:ss:SSS]</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Max Bitrate</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Avg. Bitrate</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Min. Bitrate</th>
+									<th align="center" bgcolor="#0099FF">&nbsp;Comments</th>
+							  <tr align="center" bgcolor="#CCCCCC">
+							  		<td>&nbsp;<c:out value="${index }"/></td>
+									<td>
+									<c:choose><c:when test="${headerDetail.parent_Id == null}"><c:out value="${headerDetail.headerId}"/></c:when>
+													<c:otherwise><c:out value="${headerDetail.parent_Id}"/></c:otherwise> 
+												</c:choose>
+									
+									</td>
+									<%-- <td>&nbsp;
+										<c:if test="${headerDetail.validity == 'TRUE'}"> 
+											Valid
+										</c:if>
+										<c:if test="${headerDetail.validity == 'FALSE'}"> 
+											Invalid
+										</c:if>
+									</td> --%>
+									<td id="<c:out value="${headerDetail.headerId}"/>"><a href="javascript:makeValidInValid('<c:out value="${headerDetail.headerId}"/>','<c:out value="${headerDetail.validity}"/>','<c:out value="${index }"/>')" >
+							 							<c:if test="${headerDetail.validity == 'TRUE' || headerDetail.validity == '' || headerDetail.validity == 'Valid'}">Valid</c:if> 
+														<c:if test="${headerDetail.validity == 'FALSE' || headerDetail.validity == 'Invalid'}">Invalid</c:if>
+														<c:if test="${headerDetail.validity == 'High_Valid'}">High Valid</c:if> 
+												</a>
+							 		</td>
+					 				<td>&nbsp;
+					 					<fmt:setLocale value="en_US"/>
+					 					<fmt:formatDate pattern="E dd MMM yyyy HH:mm:ss Z" value="${headerDetail.loggedDateTime}" />
+					 				</td>
+									<td>&nbsp;<c:out value="${headerDetail.client_Ip}"/></td>
+									<td>&nbsp;<c:out value="${headerDetail.client_Id}"/> </td>
+									<td>&nbsp;<c:out value="${headerDetail.location}"/></td>
+									<td>&nbsp;<c:out value="${headerDetail.accessNetwork}"/></td>
+									<td>&nbsp;<c:out value="${headerDetail.interfaceName}"/></td>
+									<td>&nbsp;<c:out value="${headerDetail.testContent}"/></td>
+									<td>&nbsp;<c:out value="${headerDetail.playBackDateTime}"/></td>
+									<td>&nbsp;
+											<time:formater milliSeconds="${headerDetail.duration}" pattern="HH:mm:ss:SSS"/>
+											<input type="hidden" name="timeFormat" value="<time:formater milliSeconds="${headerDetail.duration}" pattern="HH:mm:ss:SSS"/>"/>
+											<input type="hidden" id ="palyBackDate" name="palyBackDate" value="<c:out value="${headerDetail.playBackDateTime}"/>"/>
+									</td>
+									<td>&nbsp;<c:out value="${headerDetail.maxBitrateAppl}"/></td>
+									<td>&nbsp;<c:out value="${headerDetail.avgBitrateAppl}"/></td>
+									<td>&nbsp;<c:out value="${headerDetail.minBitrateAppl}"/></td>
+									<td>&nbsp;<c:out value="${headerDetail.comments}"/></td>
+							  </tr>
+					</table>
+					
+					</c:if>
+					<B><h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Graphical Representation Of Log Data</B></h4>
+					<input type="button" style="background:#003366; border-color:#003366; color:#ffffff;" name="Back" value="Back" onclick="backPage()"/>
+					<input type="button" style="background:#003366; border-color:#003366; color:#ffffff;" name="ShowFile" value="Show Log" onclick="showFile('<c:out value="${headerDetail.header_Id}"/>')"/>
+					<input type="button" style="background:#003366; border-color:#003366; color:#ffffff;" name="Prev" value="Prev" onclick="prevPage('<c:out value="${index}"/>')" <c:if test="${p == false}">disabled='disabled'</c:if> />
+					<input type="text" style="background-color:#CCCCCC" name="pageNo1" value='<c:out value="${(index)}"/> / <c:out value="${paginationUtil.totalSize}"/> ' readonly="true" size="10"/>
+					<input type="button" style="background:#003366; border-color:#003366; color:#ffffff;" name="Next" value="Next" onclick="nextPage('<c:out value="${index}"/>')" <c:if test="${n == false}">disabled='disabled'</c:if>/>
+					<input type="button" style="background:#003366; border-color:#003366; color:#ffffff;" name="Jump" value="Jump to Log" onclick="jumpToLog(${paginationUtil.totalSize},${index + 1})"/> <br>
+            		<br>
+					<input type="checkbox" name="BW" id="BW" readonly="true" checked onchange="redraw()" disabled/> <font style="color:#009966;"><B>BW</B></font>
+					<input type="checkbox" name="SMA" id="SMA"  onchange="redraw()"/> <font style="color:#FF0000"><B>SMA</B></font>
+					<input type="checkbox" name="SD" id="SD"  onchange="redraw()"/> <font style="color:#0000FF"><B>SD</B></font>
+					<input type="checkbox" name="Sock" id="Sock"  onchange="redraw1()"/> <font style="color:#009966"><B>Sock</B></font>
+					<table width="80%" border="1" align="center">
+				  		<tr>
+							<td >
+								<div id="visualization" style="width:1200px;height:500px;"></div>
+							</td>
+				  		</tr>
+				  		<tr>
+						<td >
+							<div id="visualization2" style="width: 100%; height:500px;display:none"></div>
+						</td>
+			  		</tr>
+					</table>
+					<p>&nbsp;</p>
+					<table width="80%" border="0" align="center">
+					  	<tr>
+						  	
+							<!--  <td align="center">&nbsp;Scale</td> -->
+							<td align="center" id="scale_display">
+								<input type='hidden' name='scale' id='scale' value='30min/page' size='10' readonly='true'>
+								<!--
+									<select name="scale" onchange="drawVisualization()">
+										<option value="ALL">ALL</option>
+										<option value="60">60sec/page</option>
+										<option value="600">10min/page</option>
+										<option value="1800">30min/page</option>
+									</select>
+								-->
+							</td>
+							<td align="center" id="scale_display_hidden">
+									<input type='hidden' name='scale_hidden' id="scale_hidden" value='3'>
+							</td>
+							<td align="center">
+								<input type="hidden" style="background:#003366; border-color:#003366; color:#ffffff;" id="ZoomIn" name="ZoomIn" value="Zoom In" onclick="zoomIn()"/>
+							</td>
+							<td align="center">
+								<input type="hidden" style="background:#003366; border-color:#003366; color:#ffffff;" id="ZoomOut" name="ZoomOut" value="Zoom Out" onclick="zoomOut()"/>
+							</td>
+							<!--  <td align="center">&nbsp;Start</td> -->
+							<td align="center" id="start_display_hidden">
+								 <input type="hidden" name="start" id="start" value='00:00:00:000' readonly="true" size="10"/> 
+							</td> 
+							
+							<td>
+								
+								<input type="hidden" id="currentPage" value="1" /> 
+							</td> 
+					    	<c:if test="${listDisplayed != null}">
+					    			<td>
+					    				<input type="hidden" style="background:#003366; border-color:#003366; color:#ffffff;" id="Prev" name="Prev" value=" Prev "onclick="prevPage()" />
+					    			</td>
+									<td>
+										<label>
+											<input type="hidden" id="pageNo" name="pageNo" size="10" value='<c:out value="${paginationUtil.currentPage}"/>/<c:out value="${paginationUtil.totalPages}"/>' readonly="true" size="10"/>
+										</label>
+									</td>
+									<td>
+										<input type="hidden" style="background:#003366; border-color:#003366; color:#ffffff;" id="Next" name="Next" value=" Next "onclick="nextPage()" /> 
+									</td>
+							</c:if>	
+					  </tr>
+					</table>
+			</td>
+		</tr>
+	</table>
+	
+	<!-- HIDDEN VARIABLES START -->
+	<div align="center" >
+			<c:if test="${sbuffer == null}">
+				<b>No Records Available</b>
+			</c:if>
+			<c:if test="${sbuffer != null}">
+			<input type="hidden" id="playbackDuration" value="<c:out value="${grandTotal}"/>"/>
+				<table width="60%" border="0" align="center">
+					<tr>
+						<td>
+								<input type="hidden" name="apps" value="<c:out value="${sbuffer}"/>" />
+								<input type="hidden" name="sock" value="<c:out value="${sbuffer1}"/>" />
+								<!--
+								drawGraph :<input type="radio" name="appsGraph" value="drawGraph" />
+					   			-->
+					   			<div id="actualValues"></div>	
+					   	</td>	
+					 </tr>
+				</table>
+			</c:if>
+	</div>
+		<!-- HIDDEN VARIABLES END -->	
+</form>
+<jsp:include page="popupDiv.jsp"/>
+<jsp:include page="Footer.jsp"/>
+</BODY>
+</HTML>

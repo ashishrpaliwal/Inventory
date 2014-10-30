@@ -1,0 +1,20 @@
+function loginValidate()
+{
+	if(document.login_page.login.value=="")
+	{
+		alert("Please Enter Login Name");
+		//eval(document.login_page.login.value="");
+		eval(document.login_page.login.focus());
+		return false;
+	}
+	if(document.login_page.pwd.value=="")
+	{
+		alert("Please Enter Password");
+		//eval(document.login_page.pwd.value="");
+		eval(document.login_page.pwd.focus());
+		return false;
+	}
+	//document.login_page.method="POST";
+	document.login_page.action="/loginCheck"
+	//document.login_page.submit();
+}

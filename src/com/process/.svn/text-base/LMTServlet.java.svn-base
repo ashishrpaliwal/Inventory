@@ -1,0 +1,462 @@
+package com.sony.process;
+
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import sun.io.UnknownCharacterException;
+
+import com.google.appengine.api.datastore.Text;
+import com.sony.constant.BWAController;
+import com.sony.constant.MigrationController;
+import com.sony.model.HeaderInfo;
+import com.sony.model.LogFile;
+import com.sony.util.JsonUtil;
+
+public class LMTServlet extends HttpServlet {
+	private static final Logger log = Logger.getLogger(LMTServlet.class.getName());
+	MigrationController mwac = MigrationController.INSTANCE;
+	
+	public void doGet(HttpServletRequest req, HttpServletResponse response)
+			throws IOException, ServletException {
+		
+		String operation = req.getParameter("operation");
+		//System.out.println("operation:"+operation);
+		
+//////////////////////////Fetch Operation Starts///////////////////////////////
+		
+		if(operation.equalsIgnoreCase("fetch")){
+			try {
+				List<HeaderInfo> headerList = null;
+				headerList = mwac.getCompleteHeaderList();//getRecentHeaderId("TRUE");
+				List<com.sony.bean.HeaderInfo> l1 = new ArrayList<com.sony.bean.HeaderInfo>();
+				for(HeaderInfo h :headerList){
+					l1.add(new com.sony.bean.HeaderInfo(h)); 
+				}
+				//JsonUtil j1 = new JsonUtil();
+				String s1 = JsonUtil.getJsonString(l1);
+				//System.out.println("logLists:" + s2);
+				response.setContentType( "text/html;charset=UTF-8");
+				PrintWriter out1;
+				out1 = response.getWriter();
+				out1.print(s1);
+				out1.flush();
+			} catch (IOException ioe1) {
+				
+				// This case shouldn't occur often, and if it does, the server is 
+				//	not capable of returning any response. Log it - Anonymous
+				log.info("Error in LMTServlet during fetch operation::"+ioe1);
+				System.out.println("Error in LMTServlet during fetch operation::"+ioe1);
+				response.sendError(500, "Error in LMTServlet during fetch operation");
+			}
+		}
+		
+/////////////////////////Fetch Operation Ends///////////////////////////////
+		
+///////////////////Download Specific Log File(based on Header Id) Operation Starts///////////////////////////////
+		
+		else if(operation.equalsIgnoreCase("download")){
+			
+			try {
+				List<LogFile> logList = null;
+				List<HeaderInfo> headerList = null;
+				List<Object> finalList = new ArrayList<Object>();
+				//Collection<String> dataList = null;
+				long header_id=0;
+				String headerId = req.getParameter("headerId");
+				header_id = Long.parseLong(headerId);
+				//System.out.println("headerId:"+headerId);
+				
+				//By default only valid logs will be returned 
+				headerList = mwac.getHeaderDetails(header_id);
+				List<com.sony.bean.HeaderSummary> header_list = new ArrayList<com.sony.bean.HeaderSummary>(); 
+				//System.out.println("headerList:" + headerList.size());
+				for(HeaderInfo h :headerList){
+					header_list.add(new com.sony.bean.HeaderSummary(h));
+					//dataList.addAll(header_list);
+					//dataList=new String[header_list.size()];
+					//header_list.toArray(dataList);
+				}
+				//String header_detail = JsonUtil.getJsonString(header_list);
+				
+				
+				logList = mwac.getLogDetail(headerId);
+				List<com.sony.bean.LogInfo> l2 = new ArrayList<com.sony.bean.LogInfo>(); 
+				for(LogFile log :logList){
+					l2.add(new com.sony.bean.LogInfo(log)); 
+					//l2.addAll(header_list);
+					//l2.toArray(dataList);
+				}
+				finalList.addAll(header_list);
+				finalList.addAll(l2);
+				//JsonUtil j2 = new JsonUtil();
+				//String s2 = JsonUtil.getJsonString(l2);
+				String final_jsone_value = JsonUtil.getJsonString(finalList);
+				//String s2 = JsonUtil.getJsonString(l2.addAll(header_list));
+				//List<String> newList = new ArrayList<String>() { { addAll(header_detail); addAll(l2); } };
+
+				//List<String> newList = ListUtils.union(header_detail, l2);
+				//List newList = new ArrayList(header_detail); 
+				//newList.addAll(l2);
+				//System.out.println("logLists:" + s2);
+				response.setContentType("text/html;charset=UTF-8");
+				PrintWriter out2;
+				out2 = response.getWriter();
+				//out2.print(s2+header_detail);
+				System.out.println("final_jsone_value" + final_jsone_value);
+				out2.print(final_jsone_value);
+				out2.flush();
+			} catch (IOException ioe2) {
+				log.info("Error in LMTServlet during download operation::"+ioe2);
+				System.out.println("Error in LMTServlet during download operation::"+ioe2);
+				response.sendError(500, "Error in LMTServlet during download operation");
+			}
+			
+		}
+	
+///////////////////Download Specific Log File(based on Header Id) Operation Ends///////////////////////////////
+
+///////////////////Delete Specific Log File(based on Header Id) Operation Starts///////////////////////////////
+		
+		else if(operation.equalsIgnoreCase("delete")){
+			
+			try {
+				List<LogFile> logList = null;
+				String headerId = req.getParameter("headerId");
+				//System.out.println("headerId:"+headerId);
+				mwac.removeHeaderId(headerId);
+				//response.setContentType( "text/html;charset=UTF-8");
+				PrintWriter out3;
+				//System.out.println( "User deleted successfully");
+				out3 = response.getWriter();	
+				//out3.append("User deleted successfully");
+				out3.flush();
+			} catch (IOException ioe3) {
+				log.info("Error in LMTServlet during delete operation::"+ioe3);
+				System.out.println("Error in LMTServlet during delete operation::"+ioe3);
+				response.sendError(500, "Error in LMTServlet during delete operation");
+			}
+			
+		}
+	
+///////////////////Delete Specific Log File(based on Header Id) Operation Ends///////////////////////////////
+
+///////////////////Migrate Log File(based on Header Id) Operation Starts///////////////////////////////
+		
+		/***********************Moved to Destination Servlet***********************/
+		else if(operation.equalsIgnoreCase("migrate")){
+			
+			String parent_Id="";
+			String client_Id="";
+			String client_Ip="";
+			String clientTool="";
+			String clientOS="";
+			String interfaceName="";
+			String interfaceDesc="";
+			long interfaceSpeed=0;
+			int mtu=0;
+			int rwin=0;
+			long receivedLength=0;
+			long socketRecvBuf=0;
+			String url="";
+			String playbackDateTime="";
+			Date loggedDateTime=null;
+			Date lastUpdateTimeStamp=null;
+			long duration=0;
+			long length=0;
+			String location="";
+			long maxBitrateAppl=0;
+			long avgBitrateAppl=0;
+			long minBitrateAppl=0;
+			long maxBitrateSock=0;
+			long avgBitrateSock=0;
+			long minBitrateSock=0;
+			String accessNetwork="";
+			String comments ="";
+			String keepAlive ="";
+			String testContent ="";
+			Text file=null;
+			long header_id=0;
+			int logFileSaveDur=0;
+			String contentType = req.getContentType();
+		  	StringBuffer sb = null;
+		  	String changedHistory="";
+		  	String validity="";
+		  	
+		  	try{
+		  		if ((contentType != null) && (contentType.indexOf("multipart/form-data") >= 0))
+				{ 
+		  			//req.setCharacterEncoding("utf8");
+					DataInputStream in = new DataInputStream(req.getInputStream());
+					sb = new StringBuffer();
+					String line1 = null;
+					String line = null;
+					while((line1 = in.readLine()) != null){
+						String line2 = new String(line1);
+						try {
+							byte[] utf8Bytes = line2.getBytes("ISO-8859-1");
+							//byte[] defaultBytes = line2.getBytes();
+							line = new String(utf8Bytes, "utf8");
+							//System.out.println("roundTrip=" + line);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						sb.append("<"+line+">");
+						
+						if(line.contains("ParentID")){
+							System.out.println("inside ParentID");
+							String[] tmp = line.split(",");
+							if(tmp.length > 1){
+								parent_Id = tmp[1].trim();
+							}
+							System.out.println("parent_Id="+parent_Id);
+						}
+						else if(line.contains("HeaderID")){
+							System.out.println("inside HeaderID");
+							String[] tmp = line.split(",");
+							if(tmp.length > 1){
+								System.out.println("inside parent_Id="+parent_Id);
+								parent_Id = tmp[1].trim();
+							}else{
+								parent_Id = "";	
+							}
+							System.out.println("parent_Id="+parent_Id);
+						}
+						else if(line.contains("ClientID")){
+							System.out.println("inside ClientID");
+							String tmp = line.split(",")[1].trim();
+							client_Id = tmp;
+							System.out.println("client_Id="+client_Id);
+						}
+						else if(line.contains("ClientIP")){
+							System.out.println("inside ClientIP");
+							String tmp = line.split(",")[1].trim();
+							client_Ip = tmp;
+							System.out.println("client_Ip="+client_Ip);
+						}
+						else if(line.contains("Logged DateTime")){
+							String tmp = line.split(",")[1].trim();
+							//"E dd MMM yyyy HH:mm:ss Z"
+							//DateFormat formatter = new SimpleDateFormat("dd-MMM-yy");; 
+							DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy");
+							loggedDateTime = (Date)formatter.parse(tmp);
+							System.out.println("loggedDateTime="+loggedDateTime);
+						}
+						else if(line.contains("ClientTool")){
+							String tmp = line.split(",")[1].trim();
+							clientTool = tmp;
+							System.out.println("clientTool="+clientTool);
+						}
+						else if(line.contains("ClientOS")){
+							String tmp = line.split(",")[1].trim();
+							clientOS = tmp;
+							System.out.println("clientOS="+clientOS);
+						}
+						else if(line.contains("InterfaceName")){
+							String tmp = line.split(",")[1].trim();
+							interfaceName = tmp;
+							System.out.println("interfaceName="+interfaceName);
+						}
+						else if(line.contains("InterfaceDescription")){
+							String tmp = line.split(",")[1].trim();
+							interfaceDesc = tmp;
+							System.out.println("interfaceDesc="+interfaceDesc);
+						}
+						else if(line.contains("InterfaceSpeed")){
+							String tmp = line.split(",")[1];
+							interfaceSpeed = Long.parseLong(tmp);
+							System.out.println("interfaceSpeed="+interfaceSpeed);
+						}
+						else if(line.contains("MTU")){
+							String tmp = line.split(",")[1];
+							mtu = Integer.parseInt(tmp);
+							System.out.println("mtu="+mtu);
+						}
+						else if(line.contains("RWIN")){
+							String tmp = line.split(",")[1];
+							rwin = Integer.parseInt(tmp);
+							System.out.println("rwin="+rwin);
+						}
+						else if(line.contains("RecvLen")){
+							String tmp = line.split(",")[1];
+							if((tmp == null)||(tmp.equals("null"))){
+								receivedLength=0;
+							}else{
+							receivedLength = Long.parseLong(tmp);
+							System.out.println("receivedLength="+receivedLength);
+							}
+						}
+						else if(line.contains("SO_RECVBUF")){
+							String tmp = line.split(",")[1];
+							if((tmp == null)||(tmp.equals("null"))){
+								socketRecvBuf=0;
+							}else{
+							socketRecvBuf = Long.parseLong(tmp);
+							System.out.println("socketRecvBuf="+socketRecvBuf);
+							}
+						}
+						else if(line.contains("URL")){
+							String tmp = line.split(",")[1].trim();
+							url = tmp;
+							System.out.println("url="+url);
+						}
+						else if(line.contains("DateTime")){
+							String tmp = line.split(",")[1];
+							playbackDateTime = tmp;
+							System.out.println("playbackDateTime="+playbackDateTime);
+						}
+						else if(line.contains("Duration")){
+							String tmp = line.split(",")[1];
+							duration = Long.parseLong(tmp);
+							System.out.println("duration="+duration);
+						}
+						else if(line.contains("Length")){
+							String tmp = line.split(",")[1];
+							length = Long.parseLong(tmp);
+							System.out.println("length="+length);
+						}
+						else if(line.contains("Location")){
+							String tmp = line.split(",")[1].trim();
+							location = tmp;
+							System.out.println("location="+location);
+						}
+						else if(line.contains("MaxBitrateAppl")){
+							String tmp = line.split(",")[1];
+							maxBitrateAppl = Long.parseLong(tmp);
+							System.out.println("maxBitrateAppl="+maxBitrateAppl);
+						}
+						else if(line.contains("AvgBitrateAppl")){
+							String tmp = line.split(",")[1];
+							avgBitrateAppl = Long.parseLong(tmp);
+							System.out.println("avgBitrateAppl="+avgBitrateAppl);
+						}
+						else if(line.contains("MinBitrateAppl")){
+							String tmp = line.split(",")[1];
+							minBitrateAppl = Long.parseLong(tmp);
+							System.out.println("minBitrateAppl="+minBitrateAppl);
+						}
+						else if(line.contains("MaxBitrateSock")){
+							String tmp = line.split(",")[1].replaceAll("MaxBitrateSock	","");
+							maxBitrateSock = Long.parseLong(tmp);
+							System.out.println("maxBitrateSock="+maxBitrateSock);
+						}
+						else if(line.contains("AvgBitrateSock")){
+							String tmp = line.split(",")[1];
+							avgBitrateSock = Long.parseLong(tmp);
+							System.out.println("avgBitrateSock="+avgBitrateSock);
+						}
+						else if(line.contains("MinBitrateSock")){
+							String tmp = line.split(",")[1];
+							minBitrateSock = Long.parseLong(tmp);
+							System.out.println("minBitrateSock="+minBitrateSock);
+						}
+						else if(line.contains("Internet Access")){
+							String tmp = line.split(",")[1].trim();
+							accessNetwork= tmp;
+							
+						}
+						else if(line.contains("Comment")){
+							String[] tmp = line.split(",");
+							if(tmp.length > 1){
+								comments = tmp[1].trim();
+							}else{
+								comments = "";	
+							}
+						}
+						else if(line.contains("TimeToSaveLogFile")){
+							String tmp = line.split(",")[1];
+							logFileSaveDur = Integer.parseInt(tmp);
+							System.out.println("logFileSaveDur="+logFileSaveDur);
+						}
+						else if(line.contains("Test Content")){
+							String tmp = line.split(",")[1].trim();
+							testContent = tmp;
+						}
+						else if(line.contains("KeepAlive")){
+							String tmp = line.split(",")[1].trim();
+							 keepAlive= tmp;
+						}
+						else if(line.contains("Validity")){
+							String tmp = line.split(",")[1].trim();
+							if(tmp.equalsIgnoreCase("Valid")){
+								tmp = "TRUE";
+							}else if(tmp.equalsIgnoreCase("Invalid")){
+								tmp = "FALSE";
+							}else if(tmp.equalsIgnoreCase("High Valid")){
+								tmp = "High_Valid";
+							}else{
+								tmp = "TRUE";
+							}
+							 validity = tmp;
+						}else if(line.contains("ChangedHistory")){
+							String[] tmp = line.split(",");
+							if(tmp.length > 1){
+								changedHistory = tmp[1].trim();
+							}else{
+								changedHistory = "";	
+							}
+						}else if(line.contains("LastUpdateTimeStamp")){
+							String tmp = line.split(",")[1].trim();
+							DateFormat formatter = new SimpleDateFormat("E dd MMM yyyy HH:mm:ss Z");
+							lastUpdateTimeStamp = (Date)formatter.parse(tmp);
+							System.out.println("lastUpdateTimeStamp="+lastUpdateTimeStamp);
+						}
+						/////Validity stuff to be added..............................................
+						
+					}//while loop close
+					sb.length();
+					file = new Text(sb.toString());
+				}//if loop close
+		  		if(sb.length() > 1000000){
+		  			response.sendError(500, "File Length exceed Error.");		  			
+		  		}else{
+		  				boolean status = mwac.isParentIdExists(parent_Id);
+		  				System.out.println("isParentIdExist:"+status);
+		  				if(!status){
+		  					mwac.addHeader(parent_Id,client_Id,client_Ip,clientTool,clientOS,interfaceName,interfaceDesc,interfaceSpeed,mtu,rwin,receivedLength,socketRecvBuf,
+									url,playbackDateTime,loggedDateTime,duration,length,location,maxBitrateAppl,avgBitrateAppl,minBitrateAppl,maxBitrateSock,avgBitrateSock,minBitrateSock,
+									file,logFileSaveDur,comments,accessNetwork,validity,testContent,keepAlive,changedHistory,lastUpdateTimeStamp);
+		  				}
+		  				else{
+		  					boolean updateStatus = mwac.updateHeaderDetails(parent_Id,changedHistory,validity,lastUpdateTimeStamp);
+		  					System.out.println("updateStatus::"+updateStatus);
+		  				}
+		  		}
+		  		response.sendRedirect("jsp/MigrateFile.jsp");
+				
+		  	} catch (IOException ioe4) {
+		  		log.info("Error in LMTServlet during migrate operation::"+ioe4);
+				System.out.println("Error in LMTServlet during migrate operation::"+ioe4);
+				response.sendError(500, "Error in LMTServlet during migrate operation. Log File not migrated");
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				log.info("Error in LMTServlet during date parsing::"+e);
+				e.printStackTrace();
+				response.sendError(500, "Error in LMTServlet during date parsing. Log File not migrated");
+			}
+			
+		}
+	
+///////////////////Migrate Specific Log File(based on Header Id) Operation Ends///////////////////////////////
+		
+	}
+	
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
+		doGet(request,response);
+	}
+}
+

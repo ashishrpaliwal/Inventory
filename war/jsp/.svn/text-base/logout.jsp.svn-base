@@ -1,0 +1,40 @@
+<%-- 
+  - Author(s): Susheel Kumar
+  - Date: December 2010
+  - Copyright Notice: Copyright © 2011 Sony Corporation.
+  - Description: Logout Page
+ --%>
+<!-- saved from url=(0014)about:internet -->
+
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@page import="java.io.*"%>
+
+<%
+ 
+   session.invalidate();
+
+%>
+
+<html>
+  <script language="javascript">
+  function test()
+  {
+	  //alert("TEST");
+  		form1.submit();
+		
+  }  
+  </script>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body onLoad="test()">
+
+    
+    <form name="form1" method="post" action="./login.jsp">
+	 
+    </form>
+   
+    
+    </body>
+</html>
+

@@ -1,0 +1,142 @@
+<%-- 
+  - Author(s): Susheel Kumar
+  - Date: December 2010
+  - Copyright Notice: Copyright © 2011 Sony Corporation.
+  - Description: Manual File Uploading Page
+ --%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<%@ page import="java.text.*,java.io.*,java.util.*"%>
+<%@page import="java.util.ArrayList"%>
+<%@ page import="com.sony.model.LogFile" %>
+<%@ page import="com.sony.constant.BWAController" %>
+
+<title>Home Page</title>
+</head>
+<link rel="stylesheet" href="css/footer.css" />
+<jsp:include page="session.jsp"/>
+
+<script type="text/javascript" language="javascript" src="resource/jquery-1.2.6.min.js"></script>
+<script type="text/javascript" language="javascript" src="resource/model-popup.js"></script>
+
+<script type="text/JavaScript">
+
+function searchValidate()
+{
+	document.feedLog.method="POST";
+	document.feedLog.action="/createLogData";
+	//document.feedLog.action="/lmtServlet?operation=migrate";
+	//document.feedLog.action="< %=blobstoreService.createUploadUrl("/upload")%>";
+	//alert("action = "+document.feedLog.action);
+	//document.feedLog.submit();
+}
+
+function searchValidate2()
+{
+	document.feedLog.method="POST";
+	//document.feedLog.action="/createLogData";
+	document.feedLog.action="/lmtServlet?operation=migrate";
+	//document.feedLog.action="< %=blobstoreService.createUploadUrl("/upload")%>";
+	//alert("action = "+document.feedLog.action);
+	//document.feedLog.submit();
+}
+
+function viewLog(LogId)
+{
+	//alert("coming");
+	var value2 = LogId;
+	//alert(value2);
+	//document.feedLog.method="GET";
+	document.feedLog.action="ViewLog.jsp?LogId="+value2;
+	//alert(document.feedLog.action);
+	document.feedLog.submit();
+	
+}
+
+</script>
+<%!
+	String log_id ="";
+
+%>
+<!--<body style="background-image: url(../icons/login2.gif);background-repeat:repeat;width:100%;height:100%;" bgColor="#00CCCC" onload=document.f1.login.focus()>-->
+<body style="background-image:url(images/bg7.jpg); background-repeat:repeat; background-position: 10% 10%; width:auto; height:auto">
+<form name="feedLog"  method="post" enctype="multipart/form-data" accept-charset="utf-8">
+
+<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">  <!--holder start-->
+	<tr><td>
+		<jsp:include page="Header.jsp"/>
+	</td></tr>
+
+<tr>
+	<td align="center">
+	<p>&nbsp;</p>
+	<p>&nbsp;</p>
+	<p>&nbsp;</p>
+			<table width="50%" border="0" align="center">
+			  <tr>
+				<td width="100%" height="43" colspan="2" align="center"><font face="Verdana, Helvetica, sans-serif" size="3" color="#000000">
+				  <B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Feed Log File</B></FONT></h1>				</td>
+			</tr><p>&nbsp;</p>
+			</table>
+			<table width="40%" border="0" align="center">
+			<tr>
+			  <td width="100%" height="10%" colspan="2" align="center"><INPUT type="file" name="LogFile">
+					<input name="submit" type="submit" class="cts9" style="background:#003366; border-color:#003366; color:#FFFFFF;" value=" Submit " onClick="searchValidate()"/>				</td>
+			  </tr>
+			</table>
+			<%
+		   		try{
+		   			BWAController bwac = BWAController.INSTANCE;
+					List<LogFile> logList = new ArrayList<LogFile>();
+					logList = bwac.logList();
+		   			
+		   		
+			%>
+			<table width="50%" border="0" align="center">
+			  <tr>
+				<td width="100%" height="43" colspan="2" align="center"><font face="Verdana, Helvetica, sans-serif" size="3" color="#000000">
+				  <B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ten Latest Log Files List</B></FONT></h1>				</td>
+			</tr><p>&nbsp;</p>
+			</table>
+			<table width="40%" border="0" align="center">
+			
+			  <%
+					for (LogFile log_list_obj : logList){
+			   %>
+			<tr>
+			  <td>
+			  
+			   
+		  		<td bgcolor="#CCCCCC">&nbsp;<%=log_list_obj.getKey()%></td>
+			<td bgcolor="#CCCCCC">&nbsp;<%=log_list_obj.getHeader_Id()%> </td>
+			<td bgcolor="#CCCCCC">&nbsp;<%=log_list_obj.getClient_Id()%></td>
+			<!--<td bgcolor="#CCCCCC">&nbsp;< %=log_list_obj.getLogFile()%></td>--> 
+			<!-- <td bgcolor="#CCCCCC"><input name="edit" type="button" style="background:#000000; border-color:#003366; color:#ffffff;" onclick="viewLog('< %=log_list_obj.getKey()%>')" value="View"/></td> -->
+			 <td bgcolor="#CCCCCC"><input name="edit" type="button" style="background:#000000; border-color:#003366; color:#ffffff;" onclick="window.location='ViewLog.jsp?LogId=+<%=log_list_obj.getKey()%>'" value="View"/></td> 
+			  <%
+			  		}
+				}catch(Exception e){
+					System.out.println("Exception at FeedLog.jsp. Exception Thrown = "+e);
+		   		}
+		      %>
+			  </td>
+			  </tr>
+			</table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</td>
+</tr>
+</table>
+</form>
+<jsp:include page="Footer.jsp"/>
+</BODY>
+
+</HTML>

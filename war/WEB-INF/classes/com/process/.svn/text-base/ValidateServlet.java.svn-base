@@ -1,0 +1,111 @@
+package com.sony.process;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.mortbay.log.Log;
+
+//import com.google.appengine.repackaged.com.google.common.base.StringUtil;
+//import com.google.appengine.repackaged.org.json.JSONObject;
+import com.sony.bean.SearchCretria;
+import com.sony.constant.BWAController;
+import com.sony.model.HeaderInfo;
+import com.sony.model.UserDetails;
+import com.sony.util.PaginationUtil;
+
+public class ValidateServlet extends HttpServlet {
+
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
+
+		String user_Id = request.getParameter("user_Id");
+		if(user_Id != null && !"".equalsIgnoreCase(user_Id)){
+		//if (!(StringUtil.isEmpty(user_Id))) {
+			List<UserDetails> user_List = BWAController.INSTANCE.userDetails(user_Id);
+			if(user_List != null && !(user_List.isEmpty())){
+				response.setContentType("text/xml");
+				response.setHeader("Cache-Control", "no-cache");
+				response.getWriter().write("<message>invalid</message>");
+			}else {
+				response.setContentType("text/xml");
+				response.setHeader("Cache-Control", "no-cache");
+				response.getWriter().write("<message>valid</message>");
+			}
+		} /*else {
+			//response.setContentType("application/json");
+			//response.setContentType("text/javascript");
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			HeaderInfo he = new HeaderInfo();
+			JSONObject headerObj2 = new JSONObject(he);
+			
+			Map<Long,String> m = new HashMap<Long,String>();
+			m.put(new Long(12345), headerObj2.toString());
+			m.put(new Long(33333), headerObj2.toString());
+			m.put(new Long(22222), headerObj2.toString());
+			JSONObject headerObj = new JSONObject(m);
+			System.out.println("Json values:::" + headerObj.toString());
+			response.getWriter().write(headerObj.toString());
+		}*/
+	}
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
+		String header_id = request.getParameter("header_id");
+		String validity = request.getParameter("validity");
+		String comments = request.getParameter("comments");
+		String indexStr = request.getParameter("index");
+		int index = 0;
+		if(indexStr != null && !"".equalsIgnoreCase(indexStr)){
+			index = Integer.parseInt(indexStr);
+		}
+		System.out.println(index + ":index");
+		String username = (String) request.getSession().getAttribute("logname");
+		if (header_id != null && !"".equalsIgnoreCase(header_id)) {
+			// if (!(StringUtil.isEmpty(header_id))) {
+			response.setContentType("text/xml");
+			response.setHeader("Cache-Control", "no-cache");
+			BWAController.INSTANCE.editHeaderDetails(header_id, validity,
+					comments, username);
+			/*
+			 * if (flag.equalsIgnoreCase("TRUE") ||
+			 * flag.equalsIgnoreCase("Valid")) {
+			 * 
+			 * response.getWriter().write("<message>Invalid</message>"); } else
+			 * { BWAController.INSTANCE.editHeaderDetails(header_id, "TRUE");
+			 * response.getWriter().write("<message>Valid</message>"); }
+			 */
+			response.getWriter().write("<message>" + validity + "</message>");
+			/*SearchCretria searchCretria = (SearchCretria) request.getSession()
+					.getAttribute("searchCretria");*/
+			/*List<HeaderInfo> headerList = BWAController.INSTANCE
+					.getMatchedLogs(searchCretria);*/
+			List<HeaderInfo> headerdata = null;
+			headerdata = BWAController.INSTANCE.getHeaderIDDetails(header_id);
+			List<HeaderInfo> headerList = (List<HeaderInfo>) request.getSession().getAttribute("headerList");
+			HeaderInfo  headerInfo = headerList.get(index - 1);
+			headerInfo.setValidity(headerdata.get(0).getValidity());
+			headerInfo.setChangedHistory(headerdata.get(0).getChangedHistory());
+			//PaginationUtil paginationUtil = (PaginationUtil)request.getSession().getAttribute("paginationUtil");
+			//int pageNo = paginationUtil.getCurrentSessionPage();
+			//System.out.println("pageNo:::"+pageNo);
+			//int fromIndex = ((pageNo-1) *1000);
+			//int toIndex = pageNo * 1000;
+			/*if(toIndex > paginationUtil.getTotalSize()){
+				toIndex = paginationUtil.getTotalSize();
+			}*/
+			//System.out.println("fromIndex:::"+fromIndex);
+			//System.out.println("toIndex:::"+toIndex);
+			//List<HeaderInfo> list = new ArrayList<HeaderInfo>(headerList.subList(fromIndex,toIndex));
+			request.getSession().setAttribute("headerList", headerList);
+			request.getSession().setAttribute("headerDetail", headerdata.get(0));
+		}
+}
+}

@@ -1,0 +1,13 @@
+<%! String session_value=null; %>
+<%try
+{session_value=""+session.getAttribute("flag");
+if(!(session_value.equals("valid")))
+{
+		RequestDispatcher dispatch=getServletContext().getRequestDispatcher("/jsp/logout.jsp");
+		dispatch.forward(request,response);
+}
+}
+catch(Exception e)
+{
+out.println(e);
+}%>

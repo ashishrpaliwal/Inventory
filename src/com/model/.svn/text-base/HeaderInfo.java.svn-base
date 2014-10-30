@@ -1,0 +1,428 @@
+/*
+ * Author: Susheel Kumar
+ * Classname: HeaderInfo.java
+ * Version information: 1.0
+ * Date:01/01/2011
+ * Copyright © 2011 Sony Corporation. All rights reserved.
+ */
+
+package com.sony.model;
+
+import com.google.appengine.api.datastore.Key;
+//import com.google.appengine.repackaged.com.google.common.base.StringUtil;
+
+import java.io.Serializable;
+import java.util.Date;
+import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.NotPersistent;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
+import javax.persistence.Transient;
+
+@PersistenceCapable
+public class HeaderInfo implements Serializable{
+	
+	@PrimaryKey
+	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	private Key header_Id;
+	@Persistent
+	private String parent_Id;
+	@Persistent
+	private String client_Id;
+	@Persistent
+	private String client_Ip;
+	@Persistent
+	private String clientTool;
+	@Persistent
+	private String clientOS;
+	@Persistent
+	private String interfaceName;
+	@Persistent
+	private String interfaceDesc;
+	@Persistent
+	private long interfaceSpeed;
+	@Persistent
+	private int mtu;
+	@Persistent
+	private int rwin;
+	@Persistent
+	private long receivedLength;
+	@Persistent
+	private long socketRecvBuf;
+	@Persistent
+	private String url;
+	@Persistent
+	private String playBackDateTime;
+	@Persistent
+	private Date loggedDateTime;
+	@Persistent
+	private long duration;
+	@Persistent
+	private long length;
+	@Persistent
+	private String location;
+	@Persistent
+	private long maxBitrateAppl;
+	@Persistent
+	private long avgBitrateAppl;
+	@Persistent
+	private long minBitrateAppl;
+	@Persistent
+	private long maxBitrateSock;
+	@Persistent
+	private long avgBitrateSock;
+	@Persistent
+	private long minBitrateSock;
+	@Persistent
+	private	String comments;
+	@Persistent
+	private	String accessNetwork;
+	@Persistent
+	private String validity;
+	@Persistent 
+	private	String testContent;
+	@Persistent	
+	private	String keepAlive;
+	@Persistent
+	private String changedHistory;
+	@Persistent
+	private Date lastUpdateTimeStamp;
+	
+	@NotPersistent
+	private long headerId;
+	
+	public HeaderInfo(){
+		
+	}
+	
+	public HeaderInfo(String parent_Id,String client_Id,String client_Ip,String clientTool,String clientOS,String interfaceName,String interfaceDesc,long interfaceSpeed,
+		int mtu,int rwin,long receivedLength,long socketRecvBuf,String url,String playBackDateTime,Date loggedDateTime,long duration,long length,String location,
+		long maxBitrateAppl,long avgBitrateAppl,long minBitrateAppl,long maxBitrateSock,long avgBitrateSock,long minBitrateSock,String comments,String accessNetwork,
+		String validity,String testCont,String keepAlive,String changedHistory,Date lastUpdateTimeStamp){
+		
+		this.parent_Id=parent_Id;
+		this.client_Id=client_Id;
+		this.client_Ip=client_Ip;
+		this.clientTool=clientTool;
+		this.clientOS=clientOS;
+		this.interfaceName=interfaceName;
+		this.interfaceDesc=interfaceDesc;
+		this.interfaceSpeed=interfaceSpeed;
+		this.mtu=mtu;
+		this.rwin=rwin;
+		this.receivedLength=receivedLength;
+		this.socketRecvBuf=socketRecvBuf;
+		this.url=url;
+		this.playBackDateTime=playBackDateTime;
+		this.loggedDateTime=loggedDateTime;
+		this.duration=duration;
+		this.length=length;
+		this.location=location;
+		this.maxBitrateAppl=maxBitrateAppl;
+		this.avgBitrateAppl=avgBitrateAppl;
+		this.minBitrateAppl=minBitrateAppl;
+		this.maxBitrateSock=maxBitrateSock;
+		this.avgBitrateSock=avgBitrateSock;
+		this.minBitrateSock=minBitrateSock;
+		this.comments =  comments;
+		this.accessNetwork= accessNetwork;
+		this.validity = validity;
+		this.testContent =testCont;
+		this.keepAlive = keepAlive;
+		this.changedHistory = changedHistory;
+		this.lastUpdateTimeStamp = lastUpdateTimeStamp;
+		//this.logFileSaveDur=logFileSaveDur;		
+	}
+	
+	// Accessors for the fields.  JDO doesn't use these, but your application does.
+
+    public Key getKey() {
+        return header_Id;
+    }
+    
+    public String getParent_Id() {
+		return parent_Id;
+	}
+
+	public void setParent_Id(String parent_Id) {
+		this.parent_Id = parent_Id;
+	}
+
+	public String getClient_Id() {
+		return client_Id;
+	}
+
+	public void setClient_Id(String clientId) {
+		client_Id = clientId;
+	}
+
+	public Key getHeader_Id() {
+		return header_Id;
+	}
+
+	public void setHeader_Id(Key headerId) {
+		header_Id = headerId;
+	}
+
+	
+    
+    public String getClient_Ip() {
+		return client_Ip;
+	}
+
+	public void setClient_Ip(String clientIp) {
+		client_Ip = clientIp;
+	}
+
+	public String getClientTool() {
+        return clientTool;
+    } 
+    public void setClientTool(String clientTool) {
+        this.clientTool = clientTool;
+    }
+    
+    public String getClientOS() {
+        return clientOS;
+    } 
+    public void setClientOS(String clientOS) {
+        this.clientOS = clientOS;
+    }
+    
+    public String getInterfaceName() {
+        return interfaceName;
+    } 
+    public void setInterfaceName(String interfaceName) {
+        this.interfaceName = interfaceName;
+    }
+    
+    public String getInterfaceDesc() {
+        return interfaceDesc;
+    } 
+    public void setInterfaceDesc(String interfaceDesc) {
+        this.interfaceDesc = interfaceDesc;
+    }
+    
+    public long getInterfaceSpeed() {
+        return interfaceSpeed;
+    } 
+    public void setInterfaceSpeed(long interfaceSpeed) {
+        this.interfaceSpeed = interfaceSpeed;
+    }
+    
+    public int getMTU() {
+        return mtu;
+    } 
+    public void setMTU(int mtu) {
+        this.mtu = mtu;
+    }
+    
+    public int getRWIN() {
+        return rwin;
+    } 
+    public void setRWIN(int rwin) {
+        this.rwin = rwin;
+    }
+    
+    public int getMtu() {
+		return mtu;
+	}
+
+	public void setMtu(int mtu) {
+		this.mtu = mtu;
+	}
+
+	public int getRwin() {
+		return rwin;
+	}
+
+	public void setRwin(int rwin) {
+		this.rwin = rwin;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public long getReceivedLength() {
+        return receivedLength;
+    } 
+    public void setReceivedLength(long receivedLength) {
+        this.receivedLength = receivedLength;
+    }
+    
+    public long getSocketRecvBuf() {
+        return socketRecvBuf;
+    } 
+    public void setSocketRecvBuf(long socketRecvBuf) {
+        this.socketRecvBuf = socketRecvBuf;
+    }
+    
+    public String getURL() {
+        return url;
+    } 
+    public void setURL(String url) {
+        this.url = url;
+    }
+    
+    public String getPlayBackDateTime() {
+        return playBackDateTime;
+    } 
+    public void setPlayBackDateTime(String playBackDateTime) {
+        this.playBackDateTime = playBackDateTime;
+    }
+    
+    public Date getLoggedDateTime() {
+        return loggedDateTime;
+    } 
+    public void setLoggedDateTime(Date loggedDateTime) {
+        this.loggedDateTime = loggedDateTime;
+    }
+    
+    public long getDuration() {
+        return duration;
+    } 
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+    
+    public long getLength() {
+        return length;
+    } 
+    public void setLength(long length) {
+        this.length = length;
+    }
+    
+    public String getLocation() {
+        return location;
+    } 
+    public void setLocation(String location) {
+        this.location = location;
+    }
+    
+    public long getMaxBitrateAppl() {
+        return maxBitrateAppl;
+    } 
+    public void setMaxBitrateAppl(long maxBitrateAppl) {
+        this.maxBitrateAppl = maxBitrateAppl;
+    }
+    
+    public long getAvgBitrateAppl() {
+        return avgBitrateAppl;
+    } 
+    public void setAvgBitrateAppl(long avgBitrateAppl) {
+        this.avgBitrateAppl = avgBitrateAppl;
+    }
+    
+    public long getMinBitrateAppl() {
+        return minBitrateAppl;
+    } 
+    public void setMinBitrateAppl(long minBitrateAppl) {
+        this.minBitrateAppl = minBitrateAppl;
+    }
+    
+    public long getMaxBitrateSock() {
+        return maxBitrateSock;
+    } 
+    public void setMaxBitrateSock(long maxBitrateSock) {
+        this.maxBitrateSock = maxBitrateSock;
+    }
+    
+    public long getAvgBitrateSock() {
+        return avgBitrateSock;
+    } 
+    public void setAvgBitrateSock(long avgBitrateSock) {
+        this.avgBitrateSock = avgBitrateSock;
+    }
+    
+    public long getMinBitrateSock() {
+        return minBitrateSock;
+    } 
+    public void setMinBitrateSock(long minBitrateSock) {
+        this.minBitrateSock = minBitrateSock;
+    }
+    public String getComments() {
+		return comments;
+	}
+
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+
+	public String getAccessNetwork() {
+		return accessNetwork;
+	}
+
+	public void setAccessNetwork(String accessNetwork) {
+		this.accessNetwork = accessNetwork;
+	}
+	
+	public String getTestContent() {
+		return testContent;
+	}
+
+	public void setTestContent(String testContent) {
+		this.testContent = testContent;
+	}
+
+	public String getKeepAlive() {
+		return keepAlive;
+	}
+
+	public void setKeepAlive(String keepAlive) {
+		this.keepAlive = keepAlive;
+	}
+
+	public String getValidity() {
+		if(this.validity == null || "".equalsIgnoreCase(this.validity)){
+		//if(StringUtil.isEmpty(this.validity)){
+			this.validity = "TRUE"; 
+		}
+		return validity;
+	}
+
+	public void setValidity(String validity) {
+		this.validity = validity;
+	}
+	
+	
+	public long getHeaderId() {
+		this.headerId = this.header_Id.getId();
+		return headerId;
+	}
+
+	public void setHeaderId(long headerId) {
+		this.headerId = this.header_Id.getId();
+	}
+	
+	public String getChangedHistory() {
+		return changedHistory;
+	}
+
+	public void setChangedHistory(String changedHistory) {
+		this.changedHistory = changedHistory;
+	}
+
+	public Date getLastUpdateTimeStamp() {
+		if(this.lastUpdateTimeStamp == null || "".equals(this.lastUpdateTimeStamp)){
+				this.lastUpdateTimeStamp = getLoggedDateTime(); 
+			}
+		return lastUpdateTimeStamp;
+	}
+
+	public void setLastUpdateTimeStamp(Date lastUpdateTimeStamp) {
+		this.lastUpdateTimeStamp = lastUpdateTimeStamp;
+	}
+
+   /* public int getFileSaveDur() {
+        return logFileSaveDur;
+    } 
+    public void setFileSaveDur(int logFileSaveDur) {
+        this.logFileSaveDur = logFileSaveDur;
+    }*/
+    
+}

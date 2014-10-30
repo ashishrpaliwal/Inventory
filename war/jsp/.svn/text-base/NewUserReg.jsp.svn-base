@@ -1,0 +1,292 @@
+<%-- 
+  - Author(s): Susheel Kumar
+  - Date: December 2010
+  - Copyright Notice: Copyright © 2011 Sony Corporation.
+  - Description: New User Registration Page
+ --%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<title>User Account Registration Page</title>
+</head>
+<link rel="stylesheet" href="css/footer.css" />
+<link rel="SHORTCUT ICON" href="images/favicon.ico"/>
+<script type="text/JavaScript">
+var req;
+function validate() {
+	   var loginIdvalid =/^[a-zA-Z][a-zA-Z0-9_]{5,20}$/;
+	   var idField = document.getElementById("login_id");
+	   if(idField.value.search(loginIdvalid)==-1)
+		 { 
+			alert("Please enter valid Login Id. Length should be atleast 6 chars.(Alphanumeric/underscore(_) is allowed.)");     
+			//document.newuser_page.login_id.value ="";  
+			document.newuser_page.login_id.focus();
+			return false;
+		}
+	   var url = "/validate?user_Id=" + encodeURIComponent(idField.value);
+	   if (typeof XMLHttpRequest != "undefined") {
+	       req = new XMLHttpRequest();
+	   } else if (window.ActiveXObject) {
+	       req = new ActiveXObject("Microsoft.XMLHTTP");
+	   }
+	   req.open("GET", url, true);
+	   req.onreadystatechange = callback;
+	   req.send(null);
+	}
+
+function callback() {
+    if (req.readyState == 4) {
+        if (req.status == 200) {
+        	parseMessage();
+        }
+    }
+}
+function parseMessage() {
+	 var message = req.responseXML.getElementsByTagName("message")[0];
+	 setMessage(message.childNodes[0].nodeValue);
+	}
+function setMessage(message) {
+    var mdiv = document.getElementById("userIdMessage");
+    if (message == "invalid") {
+       mdiv.innerHTML = "<div style=\"color:red\">Login id not available. Please try again.</div>";
+    } else {
+       mdiv.innerHTML = "<div style=\"color:green\">Login id available</div>";
+    }
+}
+function userCreate()
+{	
+	var namevalid=/^[a-zA-Z]+$/;
+	var loginIdvalid =/^[a-zA-Z][a-zA-Z0-9_]{5,20}$/;
+	var validpassword = /(?=.*\w*\d).{6,20}/;
+	
+	/*var namevalid=/^[a-zA-Z]+$/;
+	var loginIdvalid =/^[a-zA-Z][a-zA-Z0-9_]{5,20}$/;
+	var validpassword = /(?=.*\w*\d)(?=.*[a-z][A-Z]).{6,20}/; */
+	
+	if(document.newuser_page.first_name.value=="")
+	{
+		alert("Please enter First Name");
+		document.newuser_page.first_name.focus();
+		return false;
+	}else if(document.newuser_page.first_name.value.search(namevalid)==-1)
+	 { 
+		alert("Please Enter valid First Name.(Only Alphabets are allowed)");        
+		document.newuser_page.first_name.value = "";  
+		document.newuser_page.first_name.focus();
+		return false;
+	}
+	else if(document.newuser_page.last_name.value=="")
+	{
+		alert("Please enter Last Name");
+		//eval(document.login_page.pwd.value="");
+		document.newuser_page.last_name.focus()
+		return false;
+	}else if(document.newuser_page.last_name.value.search(namevalid)==-1)
+	 { 
+		alert("Please Enter valid Last Name.(Only Alphabets are allowed)");        
+		document.newuser_page.last_name.value = "";  
+		document.newuser_page.last_name.focus();
+		return false;
+	}
+
+	else if(document.newuser_page.login_id.value=="")
+	{
+		alert("Please enter Login Id");
+		document.login_page.login_id.value = ""
+		document.newuser_page.login_id.focus();
+		return false;
+	}
+	else if(document.newuser_page.login_id.value.search(loginIdvalid)==-1)
+	 { 
+		alert("Please enter valid Login Id. Length should be atleast 6 chars.(Alphanumeric/underscore(_) is allowed)");  
+		document.newuser_page.login_id.value ="";  
+		document.newuser_page.login_id.focus();
+		return false;
+	}
+	else if(document.newuser_page.pswd1.value=="")
+	{
+		alert("Please enter password");
+		//eval(document.login_page.pwd.value="");
+		document.newuser_page.pswd1.focus();
+		return false;
+	}
+	else if(document.newuser_page.pswd1.value.search(validpassword)==-1)
+	 { 
+		alert("Please enter valid password.(Should be Min 6 chars and combination of lower/upper case and numbers)");      
+		document.newuser_page.pswd1.value ="";  
+		document.newuser_page.pswd1.focus();
+		return false;
+	}
+	else if(document.newuser_page.pswd2.value=="")
+	{
+		alert("Please enter confirm password");
+		document.newuser_page.pswd2.value ="";  
+		document.newuser_page.pswd2.focus();
+		return false;
+	}
+	
+	else if(document.newuser_page.pswd1.value != document.newuser_page.pswd2.value)
+	{
+		alert("Please make sure Password & Confirm Password field values are the same.");
+		//eval(document.newuser_page.pswd1.focus());
+		return false;
+	}
+
+	else if(document.newuser_page.location.value=="")
+	{
+		alert("Please select Location");
+		//eval(document.login_page.pwd.value="");
+		document.newuser_page.location.focus();
+		return false;
+	}
+	//document.newuser_page.method="POST";
+	document.newuser_page.action="/userServlet?action=" + "create";
+	document.newuser_page.submit();
+	return true;
+}
+
+function loginPage()
+{
+	document.newuser_page.method="POST";
+	document.newuser_page.action="login.jsp"
+	document.newuser_page.submit();
+}
+</script>
+<!--<body style="background-image: url(../icons/login2.gif);background-repeat:repeat;width:100%;height:100%;" bgColor="#00CCCC" onload=document.f1.login.focus()>-->
+<%!
+String insertstatus=null;
+String user_id = null;
+String Data="";
+%>
+<%
+insertstatus = request.getParameter("insertStatus");
+user_id = request.getParameter("user_id");
+//out.println("insertstatus "+insertstatus);
+if((insertstatus!=null) && (insertstatus.equals("yes")))
+{
+
+	Data = "USER CREATED SUCCESSFULLY";
+}
+else
+{
+	Data = "";
+}
+if((insertstatus!=null) && (insertstatus.equals("NO")))
+{
+	Data = "<font color='red'>Login Id ( '" + user_id + " ') Already Exists. Please Check Login Id Availability Before Creating User</font>";
+}
+
+%>
+<body style="background-image:url(images/bg7.jpg); background-repeat:repeat; background-position: 10% 10%; width:auto; height:auto" onload=document.newuser_page.first_name.focus() leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<form name="newuser_page" method="post">
+<table width="100%"  border="0" cellpadding="0" cellspacing="0" >
+  <tr>
+    <td align="left" valign="top" bgcolor="#333333">
+      <img src="/images/SonyBG.JPG" alt="" height="75" width="100%"/>
+   </td>
+  </tr>
+</table>
+<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">  <!--holder start-->
+
+<tr>
+	<td >
+
+			<table width="40%" border="0" align="center">
+			  <tr>
+				<td width="100%" height="10%">
+				  <h1 align="center"><font face="Verdana, Helvetica, sans-serif" size="3" color="#000000">
+				  <B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				  User Account Registration Page
+		        </B></FONT></h1></td>
+			  </tr>
+			  </table></br>
+			  <p align="center">
+			  <%
+				if(insertstatus!=null)
+				{
+			  %>
+	      <b>   <font color="#0099CC">  <%=Data%> </font> </b>
+			  <%}
+				else
+				{
+			  %>
+		     <b>  <font color="#0099CC">   <%=Data%> </font> </b>
+			  <%}%>
+			</p>
+<table width="45%" border="1" align="center" bordercolor="#999999" cellspacing="0">
+  <tr>
+    <td>&nbsp;First Name <font color="red">*</font></td>
+    <td><input type="text" name="first_name" maxlength="25"/></td>
+  </tr>
+  <tr>
+    <td>&nbsp;Last Name <font color="red">*</font></td>
+    <td><input type="text" name="last_name"  maxlength="25"/> 
+    </td>
+  </tr>
+  <tr>
+    <td>&nbsp;Login Id <font color="red">*</font></td>
+    <td><input type="text" id ="login_id" name="login_id"  maxlength="50" />&nbsp;<input value="Check Availability"type="button" id ="button" name="button" onclick="validate()"/>
+    <div id="userIdMessage" style="padding-left:2px">&nbsp;</div>
+    </td>
+    
+  </tr>
+  <tr>
+    <td>&nbsp;Password <font color="red">*</font></td>
+    <td><input type="password" name="pswd1"  maxlength="15"/><br>
+    <div style="font-size: 12px; font-weight: 800; font-style:bold; color:#CCCCCC;">(Should be Min 6 chars and alphanumeric.)</div>
+    </td>
+  </tr>
+  <tr>
+    <td>&nbsp;Re-Enter Password <font color="red">*</font></td>
+    <td><input type="password" name="pswd2"  maxlength="15"/></td>
+  </tr>
+  <tr>
+    <td>&nbsp;Location <font color="red">*</font></td>
+    <td><select name="location">
+    		<option value="">Select Location</option>
+      		<option value="Australia">Australia</option>
+      		<option value="Canada">Canada</option>
+      		<option value="France">France</option>
+      		<option value="Germany">Germany</option>
+      		<option value="India">India</option>
+      		<option value="Italy">Italy</option>
+      		<option value="Japan">Japan</option>
+      		<option value="Spain">Spain</option>
+      		<option value="UK">UK</option>
+      		<option value="US">US</option>
+      		<option value="Africa">Africa</option>
+      		<option value="Americas">Americas</option>
+      		<option value="Europe">Europe</option>
+      		<option value="Oceania">Oceania</option>
+      		<option value="Others">Others</option>
+      	</select></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+    	<INPUT type="button" value=" Submit " style="background:#003366; border-color:#003366; color:#ffffff;" onclick="userCreate()">
+    	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    	<input type="reset" value=" Clear " style="background:#003366; border-color:#003366; color:#ffffff;"/>
+    	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    	<input type="button" value="Back to login Page" style="background:#003366; border-color:#003366; color:#ffffff;" onclick="loginPage()"/>
+    </td>
+    
+  </tr>
+</table>
+
+</table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</form>
+<jsp:include page="Footer.jsp"/>
+</BODY>
+
+</HTML>

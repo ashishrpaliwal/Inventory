@@ -1,0 +1,123 @@
+var headerIdG = "";
+var divIndexGlobal ="";
+function detailLog(headerId,index)
+{
+	//alert(headerId);
+	//alert('index' + index);
+	document.log_list.method="POST";
+	document.log_list.action="/viewLogs?header_id="+headerId + "&LogIndex="+index;
+	
+	document.log_list.submit();
+}
+
+/*function searchLogs(){
+	document.log_list.method="POST";
+	document.log_list.action="FilteredLogList.jsp";
+	document.log_list.submit();
+}*/
+
+function searchLogs1(){
+	
+	if(!validateClientId()){
+		return false;
+	}
+	document.log_list.method="POST";
+	//document.log_list.action="FilteredLogList.jsp";
+	document.log_list.action="/searchLogs?action="+"search";
+	document.log_list.submit();
+}
+
+function searchLogs2(){
+	
+	//alert(document.log_list.headerId.value);
+	var validHeaderId=/^[0-9]+$/;
+	var headerId=document.log_list.headerId.value;
+	if((headerId.search(validHeaderId)==-1)||(headerId==0))
+	{
+		alert("Please enter valid Header Id.");
+		return false;
+	}
+	document.log_list.method="POST";
+	document.log_list.action="/searchLogsById?action="+"search";
+	document.log_list.submit();
+}
+
+function prevPage()
+{
+	document.log_list.method="POST";
+	//document.log_list.action="/paginationServlet?button=" + "previous";
+	document.log_list.action="/searchLogs?action=" + "previous";
+	document.log_list.submit();
+}
+
+function nextPage()
+{
+	document.log_list.method="POST";
+	//document.log_list.action="/paginationServlet?button=" + "next";
+	document.log_list.action="/searchLogs?action=" + "next";
+	document.log_list.submit();
+}
+
+function jumpToPage(totalPageNo,currentPageNo)
+{
+	var validPageNo=/^[0-9]+$/;
+	var pageNo=prompt("Please enter the Page No:(1-"+totalPageNo+")",currentPageNo);
+	if(pageNo.search(validPageNo)==-1)
+	{
+		alert("Please enter valid page No.");
+	}
+	else
+	{
+		if (pageNo=="0" || pageNo>totalPageNo)
+		{
+		  alert("Please enter valid page No.");
+	    }
+		else
+		{
+			document.log_list.method="POST";
+			document.log_list.action="/searchLogs?action=" + "Jump&pageNumber="+pageNo;
+			document.log_list.submit();
+		}
+	}
+	return false;
+	
+}
+
+function validateClientId()
+{
+	 	var clientIdvalid = /^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$/;
+	 	var clientId = document.getElementById("client_Id");
+	 	if(clientId.value == ""){
+	 		return true;
+	 	}
+		if(clientId.value.search(clientIdvalid) == -1){
+			alert('Please Enter Valid Client Id');
+			clientId.value = "";
+			return false;
+		}
+		return true;
+}
+
+
+function call_rad()
+{	//alert("test");
+	var rad_val;
+	for (var i=0; i < document.log_list.rad.length; i++)
+    {
+        if (document.log_list.rad[i].checked)
+        {
+			rad_val=document.log_list.rad[i].value;
+		}
+	}
+	if(rad_val=='1')
+	{
+
+		document.getElementById("tab1").style.display="block";
+		document.getElementById("tab2").style.display="none";
+	}else if(rad_val=='2')
+	{
+	   document.getElementById("tab1").style.display="none";
+	   document.getElementById("tab2").style.display="block";
+    }
+	
+}

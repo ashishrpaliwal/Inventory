@@ -1,0 +1,612 @@
+/*
+ * Author: Susheel Kumar
+ * Classname: BWAController.java
+ * Version information: 1.0
+ * Date:01/01/2011
+ * Copyright © 2011 Sony Corporation. All rights reserved.
+ */
+
+package com.sony.constant;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+
+import org.apache.tools.ant.util.CollectionUtils;
+
+import com.google.appengine.api.datastore.Text;
+import com.sony.model.HeaderInfo;
+import com.sony.model.LogFile;
+import com.sony.model.UserDetails;
+import com.sony.util.AvgBitrateComparator;
+import com.sony.util.DateComparator;
+import com.sony.util.MinBitrateComparator;
+import com.sony.bean.SearchCretria;
+import com.sony.constant.PMF;
+
+
+public enum BWAController {
+	INSTANCE;
+
+	public void add(String firstName,String lastName,String login_id,String userRole,String userPassword,String userLocation,Date creationDate,String lastLoginDate,String userStatus) {
+		synchronized (this) {
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+	        UserDetails user_detail_obj = new UserDetails(firstName,lastName,login_id,userRole,userPassword,userLocation,new Date(),lastLoginDate,userStatus);
+			pm.makePersistent(user_detail_obj);
+			pm.close();
+					
+		}
+	}
+	
+	public List<UserDetails> listUserDetails() {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		// Read the existing entries
+        Query query = pm.newQuery(UserDetails.class);
+        query.setOrdering("user_Id ascending");
+		List<UserDetails> userList = (List<UserDetails>) query.execute();
+		userList = (List<UserDetails>) pm.detachCopyAll(userList);
+		return userList;
+	}
+	
+	public List<UserDetails> userDetails(String login_Id){
+		
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		Query query = pm.newQuery(UserDetails.class);
+		query.setFilter("login_Id == \""+login_Id+"\"");
+		try{
+			List<UserDetails> userDetails = (List<UserDetails>) query.execute();
+			userDetails = (List<UserDetails>) pm.detachCopyAll(userDetails);
+			return userDetails;
+		}catch(Exception e){
+			System.out.println("Exception at userDetails() = "+e);
+		}finally{
+			query.closeAll();
+		}
+		return null;
+	
+	}
+	
+	public List<UserDetails> userLoginCheck(String login_Id,String userPassword){
+		
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		Query query = pm.newQuery(UserDetails.class);
+		String str= "checked";
+		query.setFilter("userStatus == \""+str+"\" && login_Id == \""+login_Id+"\" && userPassword == \""+userPassword+"\"");
+		try{
+			List<UserDetails> userDetails = (List<UserDetails>) query.execute();
+			return userDetails;
+		}catch(Exception e){
+			System.out.println("Exception at userLoginCheck() = "+e);
+		}finally{
+			query.closeAll();
+		}
+		return null;
+	
+	}
+	
+	public List<UserDetails> modifyUserDetail(String userIdParam,String firstName,String lastName,String login_id,String userRole,String userPassword,String userLocation,Date creationDate,String lastLoginDate,String userStatus) {
+		synchronized (this) {
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			pm.currentTransaction().begin();
+			Query query = pm.newQuery(UserDetails.class);
+			query.setFilter("user_Id == "+userIdParam);
+			try{
+				List<UserDetails> modifyUserDetails = (List<UserDetails>) query.execute();
+				for (UserDetails user_detail_obj : modifyUserDetails){
+				user_detail_obj.setFirstName(firstName);
+				user_detail_obj.setLastName(lastName);
+				user_detail_obj.setLogin_Id(login_id);
+				user_detail_obj.setUserRole(userRole);
+				user_detail_obj.setUserPassword(userPassword);
+				user_detail_obj.setUserLocation(userLocation);
+				user_detail_obj.setCreationDate(creationDate);
+				user_detail_obj.setLastLoginDate(lastLoginDate);
+				user_detail_obj.setUserStatus(userStatus);
+				pm.currentTransaction().commit();
+				}
+				return modifyUserDetails;
+			}catch(Exception e){
+				System.out.println("Exception at modifyUserDetail() = "+e);
+			}finally{
+				query.closeAll();
+			}
+			return null;
+			
+		}
+			
+					
+	}
+	
+	public List<UserDetails> editUserDetail(String userIdParam,String firstName,String lastName,String login_id,String userRole,String userPassword,String userLocation,Date creationDate,String lastLoginDate,String userStatus) {
+		synchronized (this) {
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			pm.currentTransaction().begin();
+			Query query = pm.newQuery(UserDetails.class);
+			query.setFilter("user_Id == "+userIdParam);
+			try{
+				List<UserDetails> editUserDetails = (List<UserDetails>) query.execute();
+				for (UserDetails user_detail_obj : editUserDetails){
+				user_detail_obj.setFirstName(firstName);
+				user_detail_obj.setLastName(lastName);
+				user_detail_obj.setLogin_Id(login_id);
+				user_detail_obj.setUserRole(userRole);
+				user_detail_obj.setUserPassword(userPassword);
+				user_detail_obj.setUserLocation(userLocation);
+				user_detail_obj.setCreationDate(creationDate);
+				user_detail_obj.setLastLoginDate(lastLoginDate);
+				user_detail_obj.setUserStatus(userStatus);
+				pm.currentTransaction().commit();
+				}
+				return editUserDetails;
+			}catch(Exception e){
+				System.out.println("Exception at editUserDetail() = "+e);
+			}finally{
+				query.closeAll();
+			}
+			return null;
+			
+		}
+					
+	}
+
+	public List<UserDetails> removeUser(String userIdParam) {
+		synchronized (this) {
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			pm.currentTransaction().begin();
+			Query query = pm.newQuery(UserDetails.class);
+			query.setFilter("user_Id == "+userIdParam);
+			try{
+				List<UserDetails> modifyUserDetails = (List<UserDetails>) query.execute();
+				for (UserDetails user_detail_obj : modifyUserDetails){
+					pm.deletePersistent(user_detail_obj);
+					pm.currentTransaction().commit();
+				}
+				return modifyUserDetails;
+			}catch(Exception e){
+				System.out.println("Exception at removeUser() = "+e);
+			}finally{
+				query.closeAll();
+			}
+			return null;
+			
+		}
+			
+					
+	}
+
+
+	public List<UserDetails> getUserDetail(String userIdParam) {
+	PersistenceManager pm = PMF.get().getPersistenceManager();
+	int strtIndex = userIdParam.indexOf ("(");
+	strtIndex +=1;
+	int endIndex = userIdParam.indexOf (")");
+	String tmp = userIdParam.substring(strtIndex,endIndex);//UserDetails(7)
+	Query query = pm.newQuery(UserDetails.class);
+	query.setFilter("user_Id == "+tmp);
+	try{
+		List<UserDetails> userDetails = (List<UserDetails>) query.execute();
+		return userDetails;
+	}catch(Exception e){
+		System.out.println("Exception at getUserDetail() = "+e);
+	}finally{
+		query.closeAll();
+	}
+	return null;
+	
+	}
+
+	public List<HeaderInfo> getHeaderDetail(String headerId) {
+		
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		int strtIndex = headerId.indexOf ("(");
+		strtIndex +=1;
+		int endIndex = headerId.indexOf (")");
+		String tmp = headerId.substring(strtIndex,endIndex);
+		Query query = pm.newQuery(HeaderInfo.class);
+		query.setFilter("header_Id == "+tmp);
+		System.out.println("sys.....Testing...." + query.toString());
+		try{
+			List<HeaderInfo> headerDetails = (List<HeaderInfo>) query.execute();
+			return headerDetails;
+		}catch(Exception e){
+			System.out.println("Exception at getHeaderDetail() = "+e);
+		}finally{
+			query.closeAll();
+		}
+		return null;
+		
+	}
+public List<HeaderInfo> getHeaderIDDetails(String headerId) {
+		
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		Query query = pm.newQuery(HeaderInfo.class);
+		query.setFilter("header_Id == "+headerId);
+		System.out.println("sys.....Testing...." + query.toString());
+		try{
+			List<HeaderInfo> headerDetails = (List<HeaderInfo>) query.execute();
+			return headerDetails;
+		}catch(Exception e){
+			System.out.println("Exception at getHeaderDetail() = "+e);
+		}finally{
+			query.closeAll();
+		}
+		return null;
+		
+	}
+	public boolean addHeader(String parent_Id, String client_Id,String client_Ip,String clientTool,String clientOS,String interfaceName,String interfaceDesc,long interfaceSpeed,
+			int mtu,int rwin,long receivedLength,long socketRecvBuf,String url,String playBackDateTime,Date dateTime,long duration,long length,String location,long maxBitrateAppl,
+			long avgBitrateAppl,long minBitrateAppl,long maxBitrateSock,long avgBitrateSock,long minBitrateSock,Text file,Date startTime,String comments,String accessNetwork,
+			String validity,String testContent,String keepAlive,String changedHistory,Date lastUpdateTimeStamp){
+		synchronized (this) {
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+	        try{
+	        	HeaderInfo header_info_obj = new HeaderInfo(parent_Id,client_Id,client_Ip,clientTool,clientOS,interfaceName,interfaceDesc,interfaceSpeed,mtu,rwin,receivedLength,socketRecvBuf,
+						url,playBackDateTime,dateTime,duration,length,location,maxBitrateAppl,avgBitrateAppl,minBitrateAppl,maxBitrateSock,avgBitrateSock,minBitrateSock,comments,accessNetwork,
+						validity,testContent,keepAlive,changedHistory,lastUpdateTimeStamp);
+	        	
+	        	pm.makePersistent(header_info_obj);
+				List<HeaderInfo> header_List = new ArrayList<HeaderInfo>();
+				String header_id="";
+				String client_Ids="";
+					header_id = String.valueOf(header_info_obj.getKey().getId());//header_detail_obj.getKey().toString();
+					client_Ids=header_info_obj.getClient_Id();
+				try{
+		        	LogFile log_file_obj = new LogFile(header_info_obj.getKey(),header_id,client_Id,file);
+		        	Date endTime = new Date();
+					long totalTime = endTime.getTime() - startTime.getTime();
+					log_file_obj.setLogFileSaveDur(totalTime);
+					pm.makePersistent(log_file_obj);
+		        }catch(Exception e){
+		        	System.out.println("Block exception at addHeader() on estimating LogFileSaveDuration="+e);
+		        	//res.sendError(0, "File Length exceed Error");
+		        	e.printStackTrace();
+		        }
+				pm.evictAll();
+				pm.close();
+				return true;
+	        }catch(Exception e){
+	        	System.out.println("Exception at addHeader() in BWAController = "+e);
+	        	return false;
+	        }
+		}	
+	}
+	
+	public List<HeaderInfo> getRecentHeaderId(String valid) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+        Query query = pm.newQuery(HeaderInfo.class);
+        //query.setFilter(" validity == \"" + valid + "\"");
+        //query.setOrdering("loggedDateTime desc");
+        List<HeaderInfo> headerList = (List<HeaderInfo>) query.execute();
+        headerList = (List<HeaderInfo>)pm.detachCopyAll(headerList);
+        //Collections.sort(headerList, new DateComparator());
+        Collections.sort(headerList, new DateComparator("DESC"));	
+		return headerList;
+	}
+	
+	
+	public List<HeaderInfo> getMatchedLogs(SearchCretria searchCretria) {
+
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		Query query = pm.newQuery(HeaderInfo.class);
+		StringBuffer sb = new StringBuffer("");
+		if (searchCretria.getLocation() != null
+				&& !(searchCretria.getLocation().equals(""))) {
+			sb.append("location == \"" + searchCretria.getLocation() + "\"");
+		}
+		
+		if (searchCretria.getInterfaceName() != null
+				&& !(searchCretria.getInterfaceName().equals(""))) {
+			if (sb.length() > 0) {
+				sb.append(" &&");
+			}
+			sb.append(" accessNetwork == \"" + searchCretria.getInterfaceName()
+					+ "\"");
+
+		}
+		if (searchCretria.getClient_Id() != null
+				&& !(searchCretria.getClient_Id().equals(""))) {
+			if (sb.length() > 0) {
+				sb.append(" &&");
+			}
+			sb.append(" client_Id == \"" + searchCretria.getClient_Id() + "\"");
+		}
+		
+		if (!(searchCretria.getMinBitrateAppl() == 0)) {
+			if (sb.length() > 0) {
+				sb.append(" &&");
+			}
+			sb.append(" minBitrateAppl > " + searchCretria.getMinBitrateAppl());
+		}
+		
+		if ((searchCretria.getValidity() != null
+				&& !(searchCretria.getValidity().equals("")))) {
+			if (sb.length() > 0) {
+				sb.append(" &&");
+			}
+			sb.append(" validity == \"" + searchCretria.getValidity() + "\"");
+		/*	if(searchCretria.getValidity().equalsIgnoreCase("Valid")){
+				sb.append(" validity == \"" + searchCretria.getValidity() + "\"");
+				sb.append(" || validity == null");
+			}
+			else{
+				sb.append(" validity == \"" + searchCretria.getValidity() + "\"");
+			}*/
+		}
+		
+		if(sb.length() > 0){
+			System.out.println("sb.toString()" + sb.toString());
+			query.setFilter(sb.toString());	
+		}
+		try {
+		
+			List<HeaderInfo> headerDetails = (List<HeaderInfo>) query.execute();
+			
+			headerDetails = (List<HeaderInfo>)pm.detachCopyAll(headerDetails);
+			String sortField = searchCretria.getSortField();
+			String sortDir = searchCretria.getSortDir();
+			if("minBitrate".equalsIgnoreCase(sortField)){
+				Collections.sort(headerDetails, new MinBitrateComparator(sortDir));
+				
+			}else if("avgBitrate".equalsIgnoreCase(sortField)){
+				Collections.sort(headerDetails, new AvgBitrateComparator(sortDir));
+				
+			}else{
+				Collections.sort(headerDetails, new DateComparator(sortDir));	
+			}
+			//Collections.sort(headerDetails, new DateComparator());
+			List<HeaderInfo> tempheaderDetails = new ArrayList<HeaderInfo>();
+			for (HeaderInfo HeaderInfo : headerDetails) {
+				if(searchCretria.getAvgBitrateAppl()!= 0 && searchCretria.getDuration() != 0){
+					 if ( HeaderInfo.getAvgBitrateAppl() > searchCretria.getAvgBitrateAppl() 
+					 &&  HeaderInfo.getDuration() > searchCretria.getDuration())
+					{
+						tempheaderDetails.add(HeaderInfo);
+					}
+				}else if(searchCretria.getAvgBitrateAppl()!= 0){
+					
+					if(HeaderInfo.getAvgBitrateAppl() > searchCretria.getAvgBitrateAppl()){
+						tempheaderDetails.add(HeaderInfo);
+					}
+				}else if(searchCretria.getDuration()!= 0){
+					
+					if(HeaderInfo.getDuration() > searchCretria.getDuration()){
+						tempheaderDetails.add(HeaderInfo);
+					}
+				}else{
+					tempheaderDetails.add(HeaderInfo);
+				}
+			}
+			return tempheaderDetails;
+		} catch (Exception e) {
+			System.out.println("Exception at getMatchedLogs() = " + e);
+		} finally {
+			query.closeAll();
+		}
+		return null;
+	}
+	
+	public List<HeaderInfo> getMatchedLogs2(SearchCretria searchCretria) {
+
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		Query query = pm.newQuery(HeaderInfo.class);
+		StringBuffer sb = new StringBuffer("");
+		
+		if (searchCretria.getHeaderId() != null	&& !(searchCretria.getHeaderId().equals(""))) {
+			sb.append(" header_Id == "+searchCretria.getHeaderId());
+		}
+
+		
+		if(sb.length() > 0){
+			System.out.println("sb.toString()" + sb.toString());
+			query.setFilter(sb.toString());	
+		}
+		
+		try {
+		
+			List<HeaderInfo> headerDetails = (List<HeaderInfo>) query.execute();
+			
+			if(headerDetails.isEmpty()){
+				System.out.println("Inside Parent id checking");
+				sb = new StringBuffer("");
+				if (searchCretria.getHeaderId() != null	&& !(searchCretria.getHeaderId().equals(""))) {
+					sb.append(" parent_Id == \""+searchCretria.getHeaderId()+"\"");
+				}
+
+				
+				if(sb.length() > 0){
+					System.out.println("sb.toString()" + sb.toString());
+					query.setFilter(sb.toString());	
+				}
+				System.out.println("query:" + query.toString());
+				headerDetails = (List<HeaderInfo>) query.execute();
+				System.out.println("size of header info:" + headerDetails.size());
+			}
+			
+			headerDetails = (List<HeaderInfo>)pm.detachCopyAll(headerDetails);
+			//Collections.sort(headerDetails, new DateComparator());
+			String sortField = searchCretria.getSortField();
+			String sortDir = searchCretria.getSortDir();
+			if("minBitrate".equalsIgnoreCase(sortField)){
+				Collections.sort(headerDetails, new MinBitrateComparator(sortDir));
+				
+			}else if("avgBitrate".equalsIgnoreCase(sortField)){
+				Collections.sort(headerDetails, new AvgBitrateComparator(sortDir));
+				
+			}else{
+				Collections.sort(headerDetails, new DateComparator(sortDir));	
+			}
+			List<HeaderInfo> tempheaderDetails = new ArrayList<HeaderInfo>();
+			for (HeaderInfo HeaderInfo : headerDetails) {
+				
+					tempheaderDetails.add(HeaderInfo);
+			}
+			return tempheaderDetails;
+		} catch (Exception e) {
+			System.out.println("Exception at getMatchedLogs2() = " + e);
+		} finally {
+			query.closeAll();
+		}
+		return null;
+	}
+	
+	//Function for removing unwanted logfiles
+	public boolean removeHeaderId(String headerIdParam) {
+		synchronized (this) {
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			pm.currentTransaction().begin();
+			Query headerQuery = pm.newQuery(HeaderInfo.class);			
+			headerQuery.setFilter("header_Id == "+headerIdParam);
+			
+			Query LogQuery = pm.newQuery(LogFile.class);			
+			LogQuery.setFilter("header_Id == \""+headerIdParam+"\"");
+			
+			try{
+				//perform header delete
+				List<HeaderInfo> modifyHeaderDetails = (List<HeaderInfo>) headerQuery.execute();
+				for (HeaderInfo header_detail_obj : modifyHeaderDetails){
+					pm.deletePersistent(header_detail_obj);
+					pm.currentTransaction().commit();
+					}
+				
+				//to avoid TransactionNotActiveException() 
+				pm.currentTransaction().begin();
+				
+				//perform log delete
+				List<LogFile> modifyLogFileDetails = (List<LogFile>) LogQuery.execute();
+				//System.out.println("after execute = "+modifyLogFileDetails.size());
+				for (LogFile log_file_obj : modifyLogFileDetails){
+					pm.deletePersistent(log_file_obj);
+					pm.currentTransaction().commit();
+				}
+				
+				
+			}catch(Exception e){
+				System.out.println("Exception at removeHeaderId() = "+e);
+			}finally{
+				headerQuery.closeAll();
+				LogQuery.closeAll();
+			}			
+		}
+		return true;
+	}
+	
+	
+	
+	//Functions Communicating with LogFile Table 
+	
+	public void addLogFile(String header_Id,String client_Id,Text file){
+		synchronized (this) {
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+	        try{
+	        	
+	        	LogFile log_file_obj = null;//new LogFile(header_Id,client_Id,file);
+				pm.makePersistentAll(log_file_obj);
+				pm.evictAll();
+				pm.close();
+	        }catch(Exception e){
+	        	System.out.println("Exception at addLogFile() = "+e);
+	        }
+		}
+	}
+	
+	public void addLogFile2(String header_Id,String client_Id,Text file){
+		synchronized (this) {
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+	        try{
+				pm.evictAll();
+				pm.close();
+	        }catch(Exception e){
+	        	System.out.println("Exception at addLogFile2() = "+e);
+	        }
+		}
+	}
+	
+	public List<LogFile> logList() {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+        Query query = pm.newQuery(LogFile.class);
+        query.setOrdering("log_Id desc");
+        query.setRange(0, 10);
+		List<LogFile> logList = (List<LogFile>) query.execute();
+		return logList;
+	}
+
+    public List<LogFile> getLogDetail(String header_id) {
+		
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		int strtIndex = header_id.indexOf ("(");
+		strtIndex +=1;
+		int endIndex = header_id.indexOf (")");
+		String tmp = header_id.substring(strtIndex,endIndex);
+		Query query = pm.newQuery(LogFile.class);
+		query.setFilter("header_Id == '"+ tmp +"'");
+		System.out.println("query in log details now:" +query.toString() );
+		try{
+			List<LogFile> logDetails = (List<LogFile>) query.execute();
+			return logDetails;
+		}catch(Exception e){
+			System.out.println("Exception at getLogDetail() = "+e);
+		}finally{
+			query.closeAll();
+		}
+		return null;
+		
+	}
+    
+    public boolean  editHeaderDetails(String header_id, String validity,String comments,String username){
+    	synchronized (this) {
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			 pm.currentTransaction().begin();
+			 Query query = pm.newQuery(HeaderInfo.class);
+			 query.setFilter("header_Id == "+header_id);
+			 //String time = Calendar.getInstance().getTime().toString();
+			 Date dt = new Date();
+			 SimpleDateFormat sdf = new SimpleDateFormat("E dd MMM yyyy HH:mm:ss Z");
+			 //String time = sdf.format(dt);
+			 StringBuffer sb = new StringBuffer();
+			 String validityTmp = "";
+			 if(validity.equalsIgnoreCase("TRUE")){
+				 validityTmp="Valid";
+			 }else if(validity.equalsIgnoreCase("FALSE")){
+				 validityTmp="Invalid";
+			 }else if(validity.equalsIgnoreCase("High_Valid")){
+				 validityTmp="High Valid";
+			 }
+			 System.out.println("validityTmp::"+validityTmp);
+			 sb.append(validityTmp);
+			 sb.append(" ");
+			 sb.append(sdf.format(dt));
+			 sb.append(" ");
+			 sb.append(username);
+			 sb.append(" ");
+			 sb.append(comments);
+			 try{
+				 List<HeaderInfo> list = (List<HeaderInfo>) query.execute();
+					String readHistory = list.get(0).getChangedHistory();
+					if(readHistory != null){
+						sb.append(";");
+						sb.append(readHistory);
+					}
+				String history = sb.toString();	
+				for (HeaderInfo HeaderInfo : list){
+					HeaderInfo.setChangedHistory(history);
+					HeaderInfo.setLastUpdateTimeStamp(dt);
+					HeaderInfo.setValidity(validity);
+				}
+				pm.currentTransaction().commit();
+				return true;
+			}catch(Exception e){
+				return false;
+			}finally{
+				query.closeAll();
+			}
+		}
+    }	
+}
+

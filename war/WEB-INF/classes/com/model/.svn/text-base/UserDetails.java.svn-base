@@ -1,0 +1,150 @@
+/*
+ * Author: Susheel Kumar
+ * Classname: UserDetails.java
+ * Version information: 1.0
+ * Date:01/01/2011
+ * Copyright © 2011 Sony Corporation. All rights reserved.
+ */
+
+package com.sony.model;
+
+import com.google.appengine.api.datastore.Key;
+
+import java.io.Serializable;
+import java.util.Date;
+import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
+
+@PersistenceCapable
+public class UserDetails implements Serializable{
+	@PrimaryKey
+    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+    private Key user_Id;
+	@Persistent
+    private String firstName;
+	@Persistent
+    private String lastName;
+	@Persistent
+    private String login_Id;
+	@Persistent
+    private String userRole;
+	@Persistent
+    private String userPassword;
+	@Persistent
+    private String userLocation;
+	@Persistent
+    private Date creationDate;
+	@Persistent
+	private String lastLoginDate;
+	@Persistent
+    private String userStatus;
+
+	public UserDetails(){
+
+	}
+
+	/*public UserDetails(String firstName,String lastName,String login_Id,String userRole,String userPassword,String userLocation,Date creationDate, String userStatus){
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.login_Id = login_Id;
+		this.userRole = userRole;
+		this.userPassword = userPassword;
+		this.userLocation = userLocation;
+		this.creationDate = creationDate;
+		this.userStatus = userStatus;
+	}*/
+
+	public UserDetails(String firstName,String lastName,String login_Id,String userRole,String userPassword,String userLocation,Date creationDate, String lastLoginDate, String userStatus){
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.login_Id = login_Id;
+		this.userRole = userRole;
+		this.userPassword = userPassword;
+		this.userLocation = userLocation;
+		this.creationDate = creationDate;
+		this.lastLoginDate = lastLoginDate;
+		this.userStatus = userStatus;
+	}
+
+	public Key getUser_Id() {
+		return user_Id;
+	}
+
+	public void setUser_Id(Key userId) {
+		user_Id = userId;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getLogin_Id() {
+		return login_Id;
+	}
+
+	public void setLogin_Id(String loginId) {
+		login_Id = loginId;
+	}
+
+	public String getUserRole() {
+		return userRole;
+	}
+
+	public void setUserRole(String userRole) {
+		this.userRole = userRole;
+	}
+
+	public String getUserPassword() {
+		return userPassword;
+	}
+
+	public void setUserPassword(String userPassword) {
+		this.userPassword = userPassword;
+	}
+
+	public String getUserLocation() {
+		return userLocation;
+	}
+
+	public void setUserLocation(String userLocation) {
+		this.userLocation = userLocation;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public String getLastLoginDate() {
+		return lastLoginDate;
+	}
+
+	public void setLastLoginDate(String lastLoginDate) {
+		this.lastLoginDate = lastLoginDate;
+	}
+
+	public String getUserStatus() {
+		return userStatus;
+	}
+
+	public void setUserStatus(String userStatus) {
+		this.userStatus = userStatus;
+	}
+}

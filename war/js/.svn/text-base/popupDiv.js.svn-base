@@ -1,0 +1,158 @@
+function showPopup() {
+	var myWidth = 0, myHeight = 0;
+	  if( typeof( window.innerWidth ) == 'number' ) {
+	    //Non-IE
+	    myWidth = window.innerWidth;
+	    myHeight = window.innerHeight;
+	  } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+	    //IE 6+ in 'standards compliant mode'
+	    myWidth = document.documentElement.clientWidth;
+	    myHeight = document.documentElement.clientHeight;
+	  } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+	    //IE 4 compatible
+	    myWidth = document.body.clientWidth;
+	    myHeight = document.body.clientHeight;
+	  }
+    document.getElementById("overlay").style.display = "block";
+    document.getElementById("popup").style.display = "block";
+   	document.getElementById ('overlay').style.width=  document.body.clientWidth + 'px';
+    document.getElementById ('overlay').style.height= document.body.clientWidth+ 'px';
+    //document.popupDiv.
+}
+function closePopup() {
+    document.getElementById("overlay").style.display = "none";
+    document.getElementById("popup").style.display = "none";
+}
+function popupDivFormSubmit() {
+	var validity = document.popupDiv.validity.value;
+	var comments = document.popupDiv.review.value;
+	var headerId = document.popupDiv.popupDivHeaderId.value;
+	var index = document.popupDiv.popupDivIndex.value;
+	//alert('validity:' + validity + "\n" + 'comments:' + comments + "\n" + 'Header Id:' + headerId);
+	changeValidityAjaxCall(headerId,validity,comments,index);
+}
+function makeValidInValid(headerId,validOrInvalid,index){
+	headerIdG = headerId;
+	divIndexGlobal=index;
+	var combo = document.getElementById ("validity");
+	combo.value = validOrInvalid;
+	//var toggle = (validOrInvalid == "Valid" || validOrInvalid == "TRUE")?"Invalid":"Valid";
+	//var warningMessage = "Are you sure to make this log " + toggle + "?";
+	var divheaderId = document.getElementById("popupDivHeaderId");
+	var divIndex = document.getElementById("popupDivIndex");
+	divheaderId.value = headerIdG;
+	divIndex.value = index;
+	//alert('index' + index);
+	//var flag = confirm(warningMessage)
+	showPopup();
+	/*if (flag==true)
+	  {
+		makeValidInValidAjaxCall(headerId,validOrInvalid);
+	  }*/
+}
+function makeValidInValidTest(headerId,validOrInvalid){
+	//alert("test");
+	//alert("headerId="+headerId+" validOrInvalid="+validOrInvalid+" changedHistory="+changedHistory);
+	//var chngedHistory=changedHistory;
+	//var tempSplit = chngedHistory.split(";")[0];
+	if(validOrInvalid == "High_Valid"){
+		var validityStat="High Valid";
+	}else if((validOrInvalid == "TRUE") || (validOrInvalid == "Valid")){
+		var validityStat="Valid";
+	}else if((validOrInvalid == "FALSE") || (validOrInvalid == "Invalid")){
+		var validityStat="Invalid";
+	}
+	//var validityStat=validOrInvalid;
+	//var tmp1 = "Jan 2012 13:51:05 +0000";
+	//var stat = validityStat+" "+tmp1;
+	//alert("stat==="+stat;)
+	//alert(tempSplit.split(validityStat));
+	headerIdG = headerId;
+	//var toggle = (validOrInvalid == "Valid" || validOrInvalid == "TRUE")?"Invalid":"Valid";
+	//var warningMessage = "Are you sure to make this log " + toggle + "?";
+	
+	var divheaderId = document.getElementById("popupDivHeaderId");
+	divheaderId.value = headerIdG;
+	
+	var divValidity = document.getElementById("validity");
+	divValidity.value = validityStat;
+	/*
+	var divChangedHistory = document.getElementById("changedHistory");
+	divChangedHistory.value = tempSplit;
+	*/
+	//var flag = confirm(warningMessage)
+	showPopup();
+	/*if (flag==true)
+	  {
+		makeValidInValidAjaxCall(headerId,validOrInvalid);
+	  }*/
+}
+function makeValidInValidAjaxCall(headerId,validOrInvalid) {
+	
+	   //var url = "/jsonServlet3";
+	   var url = "/validate?header_id=" + headerId + "&flag=" + validOrInvalid;
+	   if (typeof XMLHttpRequest != "undefined") {
+	       req = new XMLHttpRequest();
+	   } else if (window.ActiveXObject) {
+	       req = new ActiveXObject("Microsoft.XMLHTTP");
+	   }
+	   req.open("POST", url, true);
+	   req.onreadystatechange = callback;
+	   req.send(null);
+	}
+function changeValidityAjaxCall(headerId,validityValue,comments,index) {
+	   //var url = "/jsonServlet3";
+	   var url = "/validate?header_id=" + headerId + "&validity=" + validityValue + "&comments=" + comments + "&index=" + index;
+	   if (typeof XMLHttpRequest != "undefined") {
+	       req = new XMLHttpRequest();
+	   } else if (window.ActiveXObject) {
+	       req = new ActiveXObject("Microsoft.XMLHTTP");
+	   }
+	   req.open("POST", url, true);
+	   req.onreadystatechange = callback;
+	   req.send(null);
+	}
+
+function callback() {
+ if (req.readyState == 4) {
+     if (req.status == 200) {
+     	parseMessage();
+     }
+ }
+}
+function parseMessage() {
+	 var message = req.responseXML.getElementsByTagName("message")[0];
+	 setMessage(message.childNodes[0].nodeValue);
+	}
+function setMessage(message) {
+ var mdiv = document.getElementById(headerIdG);
+  //alert('inside setmessage' + headerIdG);
+  var id="1"  ;
+  var validity =  message ;
+  var validityStr='';
+  if(validity=='TRUE'){
+	  validityStr="Valid";
+  }else if(validity=='FALSE'){
+	  validityStr="Invalid";
+  }else{
+	  validityStr="High Valid";
+	  validity = "High_Valid";
+  }
+  //if (message == "InValid") {
+   //var str = ''<a href="#" onclick="makeValidInValid("' + headerIdG + '","' + message +"\")>" + message + "</a>";
+	  // var str = "<a href='javascript:makeValidInValid(\"" + headerIdG + "\"," + "\"" + validity + "\")'" + ">" + validityStr + "</a>";
+  //alert('div Index' + divIndexGlobal);
+	   var str = "<a href='javascript:makeValidInValid(\"" + headerIdG + "\"," + "\"" + validity + "\"," + "\"" + divIndexGlobal  + "\")'" + ">" + validityStr + "</a>";
+	   //alert('str' + str);
+		   //+ id + "\"," + "\" + Valid + "\")' href='#'>" + InValid + "</a>";
+		   
+   //alert('str' + str);
+    mdiv.innerHTML = str;
+ //} else {
+   // mdiv.innerHTML = "<div style=\"color:green\">Login id available</div>";
+ //}
+ closePopup();    
+}
+
+
+

@@ -1,0 +1,38 @@
+/*
+ * Author: Susheel Kumar
+ * Classname: NewUserRegAuth.java
+ * Version information: 1.0
+ * Date:01/01/2011
+ * Copyright © 2011 Sony Corporation. All rights reserved.
+ */
+package com.sony.process;
+
+import java.io.IOException;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+//import com.sony.constant.BWAController;
+
+public class NewUserRegAuth extends HttpServlet {
+	private static final Logger log = Logger.getLogger(NewUserRegAuth.class.getName());
+    String auth_pin="";
+    
+        
+    public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException, IOException
+    {
+			
+    	auth_pin=req.getParameter("auth_pin");
+		//System.out.println("auth_pin = "+auth_pin);
+		if(auth_pin.equals("sonysard")){
+			res.sendRedirect("jsp/NewUserReg.jsp");
+		}else{
+			res.sendRedirect("jsp/NewUserRegPin.jsp?pinStatus=no");
+		}
+		
+	}
+        
+ }

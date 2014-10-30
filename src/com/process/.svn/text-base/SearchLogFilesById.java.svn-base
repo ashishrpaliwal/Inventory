@@ -1,0 +1,183 @@
+/*
+ * Author: Susheel Kumar
+ * Classname: SearchLogFiles.java
+ * Version information: 1.0
+ * Date:01/01/2011
+ * Copyright © 2011 Sony Corporation. All rights reserved.
+ */
+
+package com.sony.process;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.sony.bean.SearchCretria;
+import com.sony.constant.BWAController;
+import com.sony.model.HeaderInfo;
+import com.sony.util.PaginationUtil;
+import com.sony.util.SessionPaginationUtil;
+
+
+//@SuppressWarnings("serial")
+public class SearchLogFilesById extends HttpServlet {
+	private static final Logger log = Logger.getLogger(SearchLogFilesById.class.getName());
+	public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException, IOException{
+		String action = req.getParameter("action");
+		//if (!(StringUtil.isEmpty(action)) && action.equalsIgnoreCase("search")) {
+		if(action != null && !"".equalsIgnoreCase(action) && action.equalsIgnoreCase("search")){
+			performSearch(req, res);
+		} /*else{
+			setPagination(req,res);
+		}*/
+		res.sendRedirect("jsp/LogList.jsp");
+   }	
+	
+	public void doGet(HttpServletRequest req,HttpServletResponse res) throws ServletException, IOException{
+		try {
+			List<HeaderInfo> headerList = null;
+			req.getSession().removeAttribute("searchCretria");
+			SearchCretria searchCretria = new SearchCretria();
+			searchCretria.setValidity("TRUE");
+			headerList = BWAController.INSTANCE.getRecentHeaderId(searchCretria.getValidity());
+			calculateMinMaxAvgBitrate(headerList, searchCretria);
+			req.getSession().setAttribute("searchCretria", searchCretria);	
+			if (headerList.isEmpty()) {
+				// need to handle the error condition
+				req.getSession().removeAttribute("headerList");
+				req.getSession().removeAttribute("listDisplayed");
+			} else {
+				
+				setDisplayList(req, res, headerList);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		res.sendRedirect("jsp/LogList.jsp");
+   }
+	
+	public void performSearch(HttpServletRequest req, HttpServletResponse res) {
+		String headerId = req.getParameter("headerId");
+		System.out.println("headerId:::::::"+headerId);
+		SearchCretria searchCretria = new SearchCretria();
+		req.getSession().removeAttribute("listDisplayed");
+		req.getSession().removeAttribute("headerList");
+				
+		if (headerId != null && !headerId.equalsIgnoreCase("")) {
+
+			searchCretria.setHeaderId(headerId);
+		}
+				
+		//List<HeaderInfo> headerList = BWAController.INSTANCE.getMatchedLogs(searchCretria);
+		List<HeaderInfo> headerList = BWAController.INSTANCE.getMatchedLogs2(searchCretria);
+		calculateMinMaxAvgBitrate(headerList, searchCretria);
+		req.getSession().setAttribute("searchCretria", searchCretria);
+		//Storing first 1000 records in the session.
+		int totalSize = headerList.size();
+		int toIndex = totalSize < 1000 ? headerList.size():1000;
+		List<HeaderInfo> list = new ArrayList(headerList.subList(0,toIndex));
+		req.getSession().setAttribute("headerList", list);
+		
+		if(headerList.isEmpty()){
+			req.getSession().removeAttribute("headerList");
+			req.getSession().removeAttribute("listDisplayed");
+		}else{
+			setDisplayList(req,res,list,totalSize);
+		}
+	}
+	
+	public void setDisplayList(HttpServletRequest req, HttpServletResponse res, List<HeaderInfo> headerList) {
+		PaginationUtil paginationUtil = new PaginationUtil(20,headerList.size());
+		paginationUtil.nextPage();
+		int toIndex = paginationUtil.getToIndex() > headerList.size()? headerList.size(): paginationUtil.getToIndex();
+		//List<HeaderInfo> listDisplayed = headerList;//.subList(paginationUtil.getFromIndex(), toIndex);
+		List<HeaderInfo> listDisplayed = new ArrayList(headerList.subList(paginationUtil.getFromIndex(), toIndex));
+		req.getSession().setAttribute("listDisplayed", listDisplayed);
+		req.getSession().setAttribute("headerList", headerList);
+		req.getSession().setAttribute("paginationUtil", paginationUtil);
+	}
+	
+	public void setDisplayList(HttpServletRequest req, HttpServletResponse res, List<HeaderInfo> headerList,int totalsize) {
+		PaginationUtil paginationUtil = new PaginationUtil(20,totalsize);
+		paginationUtil.nextPage();
+		
+		SessionPaginationUtil sessionPageUtil = new SessionPaginationUtil(1000,totalsize);
+		paginationUtil.setCurrentSessionPage(sessionPageUtil.getCurrentSessionPage());
+		//paginationUtil.currentPage(pageNumber);
+		int toIndex = paginationUtil.getToIndex() > totalsize ? totalsize : paginationUtil.getToIndex();
+		//List<HeaderInfo> listDisplayed = headerList;//.subList(paginationUtil.getFromIndex(), toIndex);
+		List<HeaderInfo> listDisplayed = new ArrayList(headerList.subList(paginationUtil.getFromIndex(), toIndex));
+		req.getSession().setAttribute("listDisplayed", listDisplayed);
+		req.getSession().setAttribute("headerList", headerList);
+		req.getSession().setAttribute("paginationUtil", paginationUtil);
+		req.getSession().setAttribute("sessionPageUtil", sessionPageUtil);
+	}
+	
+	public void setPagination(HttpServletRequest req, HttpServletResponse res){
+		String navigation = req.getParameter("action");
+		PaginationUtil paginationUtil = (PaginationUtil) req.getSession()
+				.getAttribute("paginationUtil");
+		List<HeaderInfo> headerList = null;
+		if (paginationUtil != null) {
+			if (navigation != null && navigation.equalsIgnoreCase("next")) {
+				paginationUtil.nextPage();
+			} else if (navigation != null
+					&& navigation.equalsIgnoreCase("previous")) {
+				paginationUtil.previousPage();
+			}else if (navigation != null
+					&& navigation.equalsIgnoreCase("back")) {
+				int current = Integer.parseInt(req.getParameter("currentPosition"));
+				
+				int pageNo = 0;
+				if(current % 20 == 0){
+					pageNo = current/20;
+				}else{
+					pageNo = current/20 + 1;
+				}
+				paginationUtil.currentPage(pageNo);
+			}
+			headerList = (List<HeaderInfo>) req.getSession().getAttribute("headerList");
+			int toIndex = paginationUtil.getToIndex() > headerList.size()? headerList.size(): paginationUtil.getToIndex();
+			//List<HeaderInfo> listDisplayed = headerList;//.subList(paginationUtil.getFromIndex(), toIndex);
+			List<HeaderInfo> listDisplayed = new ArrayList(headerList.subList(paginationUtil.getFromIndex(), toIndex));
+			//List<HeaderInfo> listDisplayed = paginationUtil
+			//		.getDisplayList(headerList);
+			req.getSession().setAttribute("listDisplayed", listDisplayed);
+			req.getSession().setAttribute("paginationUtil", paginationUtil);
+		}
+	}
+	public SearchCretria calculateMinMaxAvgBitrate(List<HeaderInfo> list, SearchCretria searchCretria){
+		long avg = 0;
+		float sum = 0.0f;
+		long max_bit_rate=0;
+		long min_bit_rate=0;
+		if(!(list.isEmpty())){
+			max_bit_rate = list.get(0).getMaxBitrateAppl();
+			min_bit_rate = list.get(0).getMinBitrateAppl();
+			for(HeaderInfo headerinfo: list){
+				sum += headerinfo.getAvgBitrateAppl();
+				if(headerinfo.getMinBitrateAppl() < min_bit_rate){
+					min_bit_rate = headerinfo.getMinBitrateAppl();
+				}
+				if(headerinfo.getMinBitrateAppl() > max_bit_rate){
+					max_bit_rate = headerinfo.getMinBitrateAppl();
+				}		
+			}
+			avg = (long) (sum/list.size());;
+			searchCretria.setAvg(avg);
+			searchCretria.setMax(max_bit_rate);
+			searchCretria.setMin(min_bit_rate);
+		}
+		return searchCretria;
+	}
+}
+
+
+
+

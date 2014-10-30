@@ -1,0 +1,24 @@
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page import="com.sony.model.HeaderInfo" %>
+<div id="overlay" class="overlay">
+</div>
+<form name="popupDiv">
+<div id="popup" class="popup">
+<input type="hidden" id="popupDivHeaderId"/>
+<input type="hidden" id="popupDivIndex"/>
+<span id="close"><img src="/images/close.png" alt="Close" onClick="javascript:closePopup()" align="right"></span><BR>
+<p>Are you sure to change the validity and review?</p>
+	Validity &nbsp;&nbsp;&nbsp;
+	<select name="validity"  id="validity">
+	   <option value="High_Valid"  >High Valid</option>
+       <option value="TRUE">Valid</option>
+	   <option value="FALSE">Invalid</option>
+    </select>
+<br><br>
+	Review &nbsp;&nbsp;&nbsp;
+	 <input type="text" name="review" id="review" size="30"></input> 
+	<!-- <textarea name="review"></textarea> -->
+<br><BR>
+<p align="right"><input type="BUTTON" VALUE ="OK" name="OK" onClick="popupDivFormSubmit()"></input> <input type="BUTTON" VALUE="CANCEL" name="CANCEL" onClick="javascript:closePopup()"></input></p>
+</div>
+</form>

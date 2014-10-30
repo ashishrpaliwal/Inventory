@@ -1,0 +1,165 @@
+/* CSS Document */
+
+.newprojtxt{
+color:#FFFFFF;
+font-family:verdana;
+font-size:11px;
+}
+.newblue{
+color:#003399;
+font-size:12px;
+font-family:verdana;
+   
+	
+}
+.print{
+color:#003399;
+font-size:18px;
+font-family:verdana;
+   
+	
+}
+
+.newred{
+color:#FF0000;
+font-size:12px;
+font-family:verdana;
+   
+	
+}
+.login{
+color:#003399;
+font-size:18px;
+font-family:verdana;
+}
+.formelem{
+font-size:12px;
+font-family:verdana;
+color:#009999;
+}
+.datacenttxt{
+color:#616161;
+font-size:11px;
+font-family:verdana;
+line-height:18px;
+}
+.newtableblues{
+color:#003399;
+font-size:12px;
+font-family:verdana;
+    border-top: 1px solid #CC6600;
+	border-bottom: 1px solid #CC6600;
+	border-left: 1px solid #CC6600;
+	border-right: 1px solid #CC6600;
+	padding-left:5px;
+	padding-right:2px;
+	font-weight:normal;
+	height:25px;
+	letter-spacing:normal;
+
+}
+.newbluetable1{
+color:#003399;
+font-size:12px;
+font-family:verdana;
+    border-top: 1px solid #003399;
+	border-bottom: 1px solid #003399;
+	border-left: 1px solid #003399;
+	border-right: 1px solid #003399;
+	padding-left:5px;
+	padding-right:2px;
+	font-weight:normal;
+	height:25px;
+	letter-spacing:normal;
+
+}
+.newbluetable{
+color:#003399;
+font-size:12px;
+font-family:verdana;
+    border-top: 1px solid #0099FF;
+	border-bottom: 1px solid #0099FF;
+	border-left: 1px solid #0099FF;
+	border-right: 1px solid #0099FF;
+	padding-left:5px;
+	padding-right:2px;
+	font-weight:normal;
+	height:25px;
+	letter-spacing:normal;
+
+}
+.newbluetablefont{
+color:#003399;
+font-size:13px;
+font-family:verdana;
+    border-top: 1px solid #0099FF;
+	border-bottom: 1px solid #0099FF;
+	border-left: 1px solid #0099FF;
+	border-right: 1px solid #0099FF;
+	padding-left:5px;
+	padding-right:2px;
+	font-weight:normal;
+	height:25px;
+	letter-spacing:normal;
+
+}
+
+.newtableblues1{
+color:#003399;
+font-size:12px;
+font-family:verdana;
+    border-top: 1px solid #CC6600;
+	border-bottom: 1px solid #CC6600;
+	border-left: 1px solid #CC6600;
+	border-right: 1px solid #CC6600;
+	padding-left:2px;
+	padding-right:2px;
+	font-weight:normal;
+	height:5px;
+	width:20px;
+	letter-spacing:normal;
+
+}
+
+.blueFrame{
+color:#003399;
+font-size:11px;
+font-family:verdana;
+    border-top: 1px solid #0099FF;
+	border-bottom: 1px solid #0099FF;
+	border-left: 1px solid #0099FF;
+	border-right: 1px solid #0099FF;
+	padding-left:5px;
+	padding-right:2px;
+	font-weight:normal;
+	letter-spacing:normal;
+
+}
+
+.blueButton{
+color:#0000FF;
+background:#003399;
+font-size:13px;
+font-family:verdana;
+}
+
+
+.newlinktext{
+color:blue;
+font-size:12px;
+font-family:verdana;
+	
+}
+
+.abc
+{ 
+width:69px; 
+font-size:13px;
+}
+
+.newtabletext{
+color:black;
+font-size:12px;
+font-family:verdana;
+	
+}

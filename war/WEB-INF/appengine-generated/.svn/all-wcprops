@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/appengine-generated
+END
+local_db.bin
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/appengine-generated/local_db.bin
+END
+datastore-indexes-auto.xml
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BW_Analyzer/!svn/ver/304/trunk/BW_WebApp/Source/BWAnalyzer/war/WEB-INF/appengine-generated/datastore-indexes-auto.xml
+END

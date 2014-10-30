@@ -1,0 +1,246 @@
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jstl/fmt_rt" prefix="fmt"%>
+<%@ taglib  uri="customTags"  prefix="time" %>
+<html>
+<head>
+<meta name="robots" content="noindex,nofollow">
+<title>Bandwidth Log List Page</title>
+</head>
+<%@page import="java.text.*,java.io.*,java.util.*"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="com.sony.constant.BWAController" %>
+<%@page import="com.sony.model.HeaderInfo" %>
+<%@page import="com.sony.bean.SearchCretria" %>
+<%@page import="com.sony.util.PaginationUtil" %>
+<link rel="stylesheet" href="css/footer.css" />
+<script type="text/javascript" src="../js/log.js"></script>
+<jsp:include page="session.jsp"/>
+					 <table align="center" width="80%" border="0" cellspacing="0" class="tablefont">
+					 	 <tr>
+					   		<td colspan="4" align="center" class="radioBtn">
+					   		<input type="radio" name="param" value="2" id="rad" onClick="call_rad()"  /><b>Search By HeaderID</b>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<input type="radio" name="param" value="1" id="rad" onClick="call_rad()"  checked="checked"/><b>Advanced Search</b>
+						</td>
+					 </tr>
+					 </table>
+					 </br>
+					 
+				     <table align="center" width="86%" border="1" bordercolor="#999999" cellspacing="0" class="tablefont"  id="tab1"  style="display:block">
+			        
+			                    <th colspan="6" align="center" bgcolor="#0099FF">&nbsp;Filters</th>
+			                    <th colspan="2" align="center" bgcolor="#0099FF">&nbsp;Statistics</th>
+			                    <tr bgcolor="#CCCCCC" align="left">
+			                    	<td width="11%">&nbsp;<font color="#000000"><bold>Location</bold></font></td>
+			                    	<td colspan="3">
+		                      			<select name="location" >
+			                      			<option value="ALL" <c:if test="${searchCretria.location == 'ALL'}">selected</c:if> >ALL</option>
+								      		<option value="Australia" <c:if test="${searchCretria.location == 'Australia'}">selected</c:if>>Australia</option>
+								      		<option value="Canada" <c:if test="${searchCretria.location == 'Canada'}">selected</c:if>>Canada</option>
+								      		<option value="France" <c:if test="${searchCretria.location == 'France'}">selected</c:if>>France</option>
+								      		<option value="Germany" <c:if test="${searchCretria.location == 'Germany'}">selected</c:if>>Germany</option>
+								      		<option value="India" <c:if test="${searchCretria.location == 'India'}">selected</c:if>>India</option>
+								      		<option value="Italy" <c:if test="${searchCretria.location == 'Italy'}">selected</c:if>>Italy</option>
+								      		<option value="Japan" <c:if test="${searchCretria.location == 'Japan'}">selected</c:if>>Japan</option>
+								      		<option value="Spain" <c:if test="${searchCretria.location == 'Spain'}">selected</c:if>>Spain</option>
+								      		<option value="UK" <c:if test="${searchCretria.location == 'UK'}">selected</c:if>>UK</option>
+								      		<option value="US" <c:if test="${searchCretria.location == 'US'}">selected</c:if>>US</option>
+								      		<option value="Africa" <c:if test="${searchCretria.location == 'Africa'}">selected</c:if>>Africa</option>
+								      		<option value="Americas" <c:if test="${searchCretria.location == 'Americas'}">selected</c:if>>Americas</option>
+								      		<option value="Asia" <c:if test="${searchCretria.location == 'Asia'}">selected</c:if>>Asia</option>
+								      		<option value="Europe" <c:if test="${searchCretria.location == 'Europe'}">selected</c:if>>Europe</option>
+								      		<option value="Oceania" <c:if test="${searchCretria.location == 'Oceania'}">selected</c:if>>Oceania</option>
+								      		<option value="Others" <c:if test="${searchCretria.location == 'Others'}">selected</c:if>>Others</option>
+								      		<option value="Unknown" <c:if test="${searchCretria.location == 'Unknown'}">selected</c:if>>Unknown</option>
+				      					</select>			      					</td>
+			      					<td width="10%">&nbsp;<font color="#000000">
+                                      <bold>Avg Bitrate</bold>
+                                  </font></td>
+			      					<td width="11%"><select name="avg" >
+                                        <option value="0" 
+	                				  
+			      					  <c:if test="${searchCretria.avgBitrateAppl == 0}">selected</c:if>
+                                        > ALL
+	                				  
+			      					  </option>
+                                        <option value="1000" 
+	                				  
+			      					  <c:if test="${searchCretria.avgBitrateAppl == 1000}">selected</c:if>
+                                        >Over 1M
+	                				  
+			      					  </option>
+                                        <option value="2000" 
+	                				  
+			      					  <c:if test="${searchCretria.avgBitrateAppl == 2000}">selected</c:if>
+                                        >Over 2M
+	                				  
+			      					  </option>
+                                        <option value="4000" 
+	                				  
+			      					  <c:if test="${searchCretria.avgBitrateAppl == 4000}">selected</c:if>
+                                        >Over 4M
+	                				  
+			      					  </option>
+                                        <option value="8000" 
+	                				  
+			      					  <c:if test="${searchCretria.avgBitrateAppl == 8000}">selected</c:if>
+                                        >Over 8M
+	                				  
+			      					  </option>
+                                      </select>                                    </td>
+			      					<td width="11%">&nbsp;<font color="#000000"><bold>Matched Logs</bold></font></td>
+			                      	<td width="14%">
+			                      		<input type="text" style="background-color:#CCCCCC" name="matched_logs"  value='<c:out value="${paginationUtil.totalSize}"/>'  readonly="true"/>									</td>			                      	
+			                    </tr>
+			                    <tr bgcolor="#CCCCCC" align="left">
+			                    	<td>&nbsp;<font color="#000000"><bold>Internet&nbsp;Access</bold></font></td>
+			                    	<td colspan="3">
+	              						<select name="interfaceName">
+	                  						<option value="ALL">ALL</option>
+	                  						<option value="xDSL" <c:if test="${searchCretria.interfaceName == 'xDSL'}">selected</c:if>>xDSL</option>
+	                  						<option value="Cable" <c:if test="${searchCretria.interfaceName == 'Cable'}">selected</c:if>>Cable</option>
+	                  						<option value="Optical Fiber" <c:if test="${searchCretria.interfaceName == 'Optical Fiber'}">selected</c:if>>Optical Fiber</option>
+	                  						<option value="Hotspot" <c:if test="${searchCretria.interfaceName == 'Hotspot'}">selected</c:if>>Hotspot</option>
+	                  						<option value="3G" <c:if test="${searchCretria.interfaceName == '3G'}">selected</c:if>>3G</option>
+	                  						<option value="WiMax" <c:if test="${searchCretria.interfaceName == 'WiMax'}">selected</c:if>>WiMax</option>
+	                  						<option value="LTE" <c:if test="${searchCretria.interfaceName == 'LTE'}">selected</c:if>>LTE</option>
+	                  						<option value="Office" <c:if test="${searchCretria.interfaceName == 'Office'}">selected</c:if>>Office</option>
+	                  						<option value="Others" <c:if test="${searchCretria.interfaceName == 'Others'}">selected</c:if>>Others</option>
+	                  						<option value="Unknown" <c:if test="${searchCretria.interfaceName == 'Unknown'}">selected</c:if>>Unknown</option>
+	                					</select>	                				</td>
+	                				<td>&nbsp;<font color="#000000">
+                                      <bold>Min Bitrate</bold>
+                                    </font></td>
+	                				<td><select name="min">
+                                        <option value="0" 
+          						  
+	                				  <c:if test="${searchCretria.minBitrateAppl == 0}">selected</c:if>
+                                        >ALL
+          						  
+	                				  </option>
+                                        <option value="1000" 
+          						  
+	                				  <c:if test="${searchCretria.minBitrateAppl == 1000}">selected</c:if>
+                                        >Over 1k
+          						  
+	                				  </option>
+                                        <option value="2000" 
+          						  
+	                				  <c:if test="${searchCretria.minBitrateAppl == 2000}">selected</c:if>
+                                        >Over 2k
+          						  
+	                				  </option>
+                                        <option value="4000" 
+          						  
+	                				  <c:if test="${searchCretria.minBitrateAppl == 4000}">selected</c:if>
+                                        >Over 4k
+          						  
+	                				  </option>
+                                        <option value="8000" 
+          						  
+	                				  <c:if test="${searchCretria.minBitrateAppl == 8000}">selected</c:if>
+                                        >Over 8k
+          						  
+	                				  </option>
+                                      </select>                                    </td>
+	                				<td>&nbsp;<font color="#000000"><bold>Max Bitrate</bold></font></td>
+	              					<td>
+	              						<input type="text" style="background-color:#CCCCCC" name="max_bitrate" value='<c:out value="${searchCretria.max}"/>' readonly="true"/>	              					</td>
+              				    </tr>
+          				    <tr bgcolor="#CCCCCC" align="left">
+          				    	<td>&nbsp;<font color="#000000"><bold>Client Id</bold></font></td>
+          				    	<td colspan="3">
+          							<input type="text" id="client_Id" name="client_Id" size="40" maxlength="36" value='<c:out value="${searchCretria.client_Id}"/>'>									          						</td>
+          						<td>&nbsp;<font color="#000000">
+                                  <bold>Duration</bold>
+                                </font></td>
+          						<td><select name="duration">
+                                    <option value="0" 
+              				     
+          						  <c:if test="${searchCretria.duration == 0}">selected</c:if>
+                                    >ALL
+              				     
+          						  </option>
+                                    <option value="600000" 
+              				     
+          						  <c:if test="${searchCretria.duration == 600000}">selected</c:if>
+                                    >>=10min
+              				     
+          						  </option>
+                                    <option value="1800000" 
+              				     
+          						  <c:if test="${searchCretria.duration == 1800000}">selected</c:if>
+                                    >>=30min
+              				     
+          						  </option>
+                                    <option value="3600000" 
+              				     
+          						  <c:if test="${searchCretria.duration == 3600000}">selected</c:if>
+                                    >>=60min
+              				     
+          						  </option>
+                                    <option value="7200000" 
+              				     
+          						  <c:if test="${searchCretria.duration == 7200000}">selected</c:if>
+                                    >>=120min
+              				     
+          						  </option>
+                                  </select>                                </td>
+          						<td>&nbsp;<font color="#000000"><bold>Avg Bitrate</bold></font></td>
+								<td>
+          							<input type="text" style="background-color:#CCCCCC" name="avg_bitrate" value='<c:out value="${searchCretria.avg}"/>' readonly="true"/>          						</td>
+          				    </tr>
+							
+							<tr align="left" bgcolor="#CCCCCC">
+                               <td>&nbsp;<font color="#000000">
+                                 <bold>Validity</bold>
+                               </font> </td>
+              				   <td width="9%"><select name="validity">
+                                   <option value="ALL">ALL</option>
+                                   <option value="High_Valid" <c:if test="${searchCretria.validity == 'High_Valid'}">selected</c:if> >High Valid</option>
+                                   <option value="TRUE" <c:if test="${searchCretria.validity == 'TRUE'}">selected</c:if> >Valid</option>
+              				       <option value="FALSE" <c:if test="${searchCretria.validity == 'FALSE'}">selected</c:if> >Invalid</option>
+           				      </select><bold></bold></td>
+              				   <td width="17%">&nbsp;&nbsp;
+           				       <bold>Parameterised Sorting</bold></td>
+              				   <td width="17%">
+							   	<select name="sort_params">
+                                   <option value="date" <c:if test="${searchCretria.sortField == 'date'}">selected</c:if> >Date-wise</option>
+                                   <option value="minBitrate" <c:if test="${searchCretria.sortField == 'minBitrate'}">selected</c:if> >Min. Bitrate-wise</option>
+              				       <option value="avgBitrate" <c:if test="${searchCretria.sortField == 'avgBitrate'}">selected</c:if> >Avg. Bitrate-wise</option>
+       				          </select></td>
+              				   <td>&nbsp;<bold>Sort By</bold></td>
+              				   <td>
+							   	  <select name="sortType">
+                                 		<option value="DESC" <c:if test="${searchCretria.sortDir == 'DESC'}">selected</c:if> >Descending </option>
+										<option value="ASC" <c:if test="${searchCretria.sortDir == 'ASC'}">selected</c:if> >Ascending </option>
+								   </select>								</td>
+              				   <td>&nbsp;<font color="#000000">
+              				     <bold>Min Bitrate</bold>
+            				     </font> </td>
+              				   <td><input type="text" style="background-color:#CCCCCC" name="min_bitrate" value='<c:out value="${searchCretria.min}"/>' readonly="true"/>                               </td>
+       				   		</tr>
+					   
+					    <tr bgcolor="#CCCCCC" align="left">
+                         <td colspan="8" align="center">&nbsp;
+                             <input type="button" style="background:#003366; border-color:#003366; color:#ffffff;" name="Search1" onClick="searchLogs1()" value=" Search "/>                         </td>
+                       </tr>
+        			 </table>
+					 
+					 <table align="center" width="28%" border="1" bordercolor="#999999" cellspacing="0" class="tablefont"  id="tab2"  style="display:none">
+					 
+			                    <th colspan="4" align="center" bgcolor="#0099FF">&nbsp;Filters</th>
+			                    <tr bgcolor="#CCCCCC" align="left">
+			                    	<td width="29%">&nbsp;<font color="#000000">
+			      					  <bold>Header Id </bold>
+		      					  </font></td>
+			      					<td width="40%"><input type="text" name="headerId"  value='<c:out value="${searchCretria.headerId}"/>'/></td>
+			                      	<td width="35%"> 
+										<input type="button" style="background:#003366; border-color:#003366; color:#ffffff;" name="Search2" onClick="searchLogs2()" value=" Search "/>
+									</td>
+			                    </tr>
+					  
+        			 </table>
+				     
+				     

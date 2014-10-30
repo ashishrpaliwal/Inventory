@@ -1,0 +1,42 @@
+package com.sony.process;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.sony.constant.BWAController;
+import com.sony.model.LogFile;
+
+
+public class DeleteLogServlet extends HttpServlet{
+	
+	private static final Logger log = Logger.getLogger(DeleteLogServlet.class.getName());
+	BWAController bwac = BWAController.INSTANCE;
+	
+	public void doPost(HttpServletRequest req, HttpServletResponse res)throws IOException, ServletException{
+		
+		try {
+			List<LogFile> logList = null;
+			String headerId = req.getParameter("headerId");
+			boolean logFileDeletionStatus = bwac.removeHeaderId(headerId);
+			PrintWriter out;
+			System.out.println("Log deleted successfully");
+			out = res.getWriter();	
+			out.flush();
+		} catch (IOException e) {
+			log.info("Error in DeleteLogServlet during delete operation::"+e);
+			System.out.println("Error in DeleteLogServlet during delete operation::"+e);
+		}
+		res.sendRedirect("jsp/DeleteLog.jsp");
+	}
+	public void doGet(HttpServletRequest req, HttpServletResponse res)throws IOException, ServletException{
+		doPost(req,res);
+	}
+
+}

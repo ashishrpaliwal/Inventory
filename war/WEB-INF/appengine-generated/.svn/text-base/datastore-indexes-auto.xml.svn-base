@@ -1,0 +1,130 @@
+<!-- Indices written at Tue, 26 Jul 2011 08:45:08 UTC -->
+
+<datastore-indexes>
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="accessNetwork" direction="asc"/>
+        <property name="client_Id" direction="asc"/>
+        <property name="location" direction="asc"/>
+        <property name="minBitrateAppl" direction="asc"/>
+    </datastore-index>
+
+ <!-- Used 5 times in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="accessNetwork" direction="asc"/>
+        <property name="client_Id" direction="asc"/>
+        <property name="location" direction="asc"/>
+        <property name="validity" direction="asc"/>
+        <property name="minBitrateAppl" direction="asc"/>
+    </datastore-index>
+
+    <!-- Used 4 times in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="accessNetwork" direction="asc"/>
+        <property name="client_Id" direction="asc"/>
+        <property name="validity" direction="asc"/>
+        <property name="minBitrateAppl" direction="asc"/>
+    </datastore-index>
+    
+    <!-- Used 6 times in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="accessNetwork" direction="asc"/>
+        <property name="location" direction="asc"/>
+        <property name="validity" direction="asc"/>
+        <property name="minBitrateAppl" direction="asc"/>
+    </datastore-index> 
+    
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="accessNetwork" direction="asc"/>
+        <property name="minBitrateAppl" direction="asc"/>
+    </datastore-index>
+    
+    <!-- Used 5 times in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="accessNetwork" direction="asc"/>
+        <property name="validity" direction="asc"/>
+        <property name="minBitrateAppl" direction="asc"/>
+    </datastore-index>  
+    
+    <!-- Used 5 times in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="client_Id" direction="asc"/>
+        <property name="location" direction="asc"/>
+        <property name="minBitrateAppl" direction="asc"/>
+    </datastore-index>   
+    
+    <!-- Used 5 times in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="client_Id" direction="asc"/>
+        <property name="location" direction="asc"/>
+        <property name="validity" direction="asc"/>
+        <property name="minBitrateAppl" direction="asc"/>
+    </datastore-index>
+    
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="client_Id" direction="asc"/>
+        <property name="minBitrateAppl" direction="asc"/>
+    </datastore-index>
+    
+     <!-- Used 1 time in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="client_Id" direction="asc"/>
+        <property name="minBitrateAppl" direction="asc"/>
+        <property name="loggedDateTime" direction="desc"/>
+    </datastore-index>
+    
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="client_Id" direction="asc"/>
+        <property name="validity" direction="asc"/>
+        <property name="minBitrateAppl" direction="asc"/>
+    </datastore-index>
+    
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="location" direction="asc"/>
+        <property name="minBitrateAppl" direction="asc"/>
+    </datastore-index>
+    
+    <!-- Used 7 times in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="location" direction="asc"/>
+        <property name="minBitrateAppl" direction="asc"/>
+        <property name="loggedDateTime" direction="desc"/>
+    </datastore-index>
+    
+    <!-- Used 7 times in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="location" direction="asc"/>
+        <property name="validity" direction="asc"/>
+        <property name="minBitrateAppl" direction="asc"/>
+    </datastore-index>
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="location" direction="asc"/>
+        <property name="minBitrateAppl" direction="asc"/>
+    </datastore-index>
+    
+        <!-- Used 1 time in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="minBitrateAppl" direction="asc"/>
+        <property name="loggedDateTime" direction="desc"/>
+    </datastore-index>
+    
+    <!-- Used 3 times in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="validity" direction="asc"/>
+        <property name="loggedDateTime" direction="desc"/>
+    </datastore-index>
+    
+     <!-- Used 15 times in query history -->
+    <datastore-index kind="HeaderInfo" ancestor="false" source="auto">
+        <property name="validity" direction="asc"/>
+        <property name="minBitrateAppl" direction="asc"/>
+    </datastore-index>
+
+</datastore-indexes>
